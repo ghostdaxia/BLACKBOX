@@ -51,10 +51,10 @@ const PasswordGen = (() => {
   const entropyBits = (len, pool) => len * Math.log2(pool);
 
   function describe(bits) {
-    if (bits < 45) return 'Weak';
-    if (bits < 60) return 'Fair';
-    if (bits < 80) return 'Strong';
-    return 'Excellent';
+    if (bits < 45) return t('gen.weak');
+    if (bits < 60) return t('gen.fair');
+    if (bits < 80) return t('gen.strong');
+    return t('gen.excellent');
   }
 
   /* ── UI ── */
@@ -71,6 +71,9 @@ const PasswordGen = (() => {
     document.getElementById('genRefresh')?.addEventListener('click', _render);
     document.getElementById('genCopy')?.addEventListener('click', _copy);
     document.getElementById('genUse')?.addEventListener('click', _use);
+    document.addEventListener('langchange', () => {
+      if (!document.getElementById('genModal')?.classList.contains('hidden')) _render();
+    });
   }
 
   function open(opts) {
@@ -106,7 +109,7 @@ const PasswordGen = (() => {
     const pool = poolSize(o);
     const bits = entropyBits(o.length, pool);
     const ent = document.getElementById('genEntropy');
-    if (ent) ent.textContent = `${Math.round(bits)} bits · ${describe(bits)} · ${o.length} characters from a ${pool}-character alphabet`;
+    if (ent) ent.textContent = t('gen.entropy_summary', Math.round(bits), describe(bits), o.length, pool);
   }
 
   async function _copy() {
@@ -124,7 +127,7 @@ const PasswordGen = (() => {
     if (!target || !out || !out.value) return;
     target.value = out.value;
     close();
-    toast('Strong password inserted');
+    toast(t('gen.inserted'));
   }
 
   function toast(msg, red) {

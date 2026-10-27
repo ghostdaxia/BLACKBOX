@@ -48,28 +48,28 @@ const VaultHealth = (() => {
   function _strengthIssues(value, name) {
     const v = String(value == null ? '' : value);
     const out = [];
-    if (v.length < 6) out.push({ reason: 'Very short', detail: 'Fewer than 6 characters — guessable in milliseconds.', weight: 25 });
-    else if (v.length < 8) out.push({ reason: 'Short', detail: 'Under 8 characters — below any modern minimum.', weight: 15 });
+    if (v.length < 6) out.push({ reason: t('health.very_short'), detail: t('health.very_short_detail'), weight: 25 });
+    else if (v.length < 8) out.push({ reason: t('health.short'), detail: t('health.short_detail'), weight: 15 });
 
     const n = _norm(v);
     if (COMMON.has(n) || COMMON.has(_base(n))) {
-      out.push({ reason: 'Common password', detail: 'Found in every breach wordlist — replace it immediately.', weight: 50 });
+      out.push({ reason: t('health.common_password'), detail: t('health.common_password_detail'), weight: 50 });
     }
     if (/^(.)\1+$/.test(n)) {
-      out.push({ reason: 'Single repeated character', detail: 'One character over and over — guessable instantly.', weight: 45 });
+      out.push({ reason: t('health.repeated_single'), detail: t('health.repeated_single_detail'), weight: 45 });
     } else if (/(.)\1{2,}/.test(n)) {
-      out.push({ reason: 'Repeated characters', detail: 'Runs like "aaa" shrink the search space fast.', weight: 10 });
+      out.push({ reason: t('health.repeated_chars'), detail: t('health.repeated_chars_detail'), weight: 10 });
     }
     if (_sequential(n)) {
-      out.push({ reason: 'Sequential run', detail: 'Strings like "abcd" or "1234" add almost no strength.', weight: 10 });
+      out.push({ reason: t('health.sequential_run'), detail: t('health.sequential_run_detail'), weight: 10 });
     }
-    const nameTok = String(name || '').toLowerCase().split(/\s+/).filter(t => t.length >= 4)[0];
+    const nameTok = String(name || '').toLowerCase().split(/\s+/).filter(tok => tok.length >= 4)[0];
     if (nameTok && n.includes(nameTok)) {
-      out.push({ reason: 'Contains the name', detail: `Uses "${nameTok}" from the entry's own name.`, weight: 8 });
+      out.push({ reason: t('health.contains_name'), detail: t('health.contains_name_detail', nameTok), weight: 8 });
     }
     const classes = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^a-z0-9]/i].filter(re => re.test(v)).length;
     if (v.length >= 8 && classes <= 1) {
-      out.push({ reason: 'Single character type', detail: 'Only letters (or only digits) — mix character classes.', weight: 10 });
+      out.push({ reason: t('health.single_char_type'), detail: t('health.single_char_type_detail'), weight: 10 });
     }
     return out;
   }
@@ -83,7 +83,7 @@ const VaultHealth = (() => {
       const found = _strengthIssues(s.value, s.name);
       if (found.length) weak++;
       for (const f of found) {
-        issues.push({ id: s.id, label: s.name || '(unnamed)', view: s.name || '', cat: s.category || 'other', reason: f.reason, detail: f.detail, weight: f.weight });
+        issues.push({ id: s.id, label: s.name || t('health.unnamed'), view: s.name || '', cat: s.category || 'other', reason: f.reason, detail: f.detail, weight: f.weight });
       }
     }
 
@@ -101,11 +101,11 @@ const VaultHealth = (() => {
       reused++;
       issues.push({
         id: group[0].id,
-        label: group.map(s => s.name || '(unnamed)').join(', '),
+        label: group.map(s => s.name || t('health.unnamed')).join(', '),
         view: group[0].name || '',
         cat: 'other',
-        reason: 'Reused value',
-        detail: `The identical value backs ${group.length} entries — if one leaks, all of them do.`,
+        reason: t('health.reused_value'),
+        detail: t('health.reused_value_detail', group.length),
         weight: 8 * (group.length - 1),
       });
     }
@@ -116,10 +116,10 @@ const VaultHealth = (() => {
   }
 
   function labelFor(score) {
-    if (score >= 90) return 'Excellent';
-    if (score >= 75) return 'Good';
-    if (score >= 50) return 'Fair';
-    return 'At risk';
+    if (score >= 90) return t('health.excellent');
+    if (score >= 75) return t('health.good');
+    if (score >= 50) return t('health.fair');
+    return t('health.at_risk');
   }
 
   /* ── UI ── */
@@ -129,6 +129,10 @@ const VaultHealth = (() => {
     document.querySelector('#healthModal .modal-backdrop')?.addEventListener('click', close);
     document.getElementById('healthRescan')?.addEventListener('click', render);
     refreshScore();
+    document.addEventListener('langchange', () => {
+      if (!document.getElementById('healthModal')?.classList.contains('hidden')) render();
+      else refreshScore();
+    });
   }
 
   function close() {
@@ -151,17 +155,17 @@ const VaultHealth = (() => {
       r = analyze(await Vault.getAllSecrets());
     } catch (e) {
       scoreEl.textContent = '—';
-      summaryEl.textContent = 'Unlock the vault to run a health check.';
+      summaryEl.textContent = t('health.unlock_first');
       return;
     }
     scoreEl.textContent = String(r.score);
     scoreEl.style.color = r.score >= 75 ? 'var(--green)' : r.score >= 50 ? 'var(--yellow)' : 'var(--red)';
     summaryEl.textContent = r.count === 0
-      ? 'Nothing to audit yet — add some secrets first.'
-      : `${r.count} entries · ${r.weak} weak · ${r.reused} reused · ${r.label}`;
+      ? t('health.nothing_to_audit')
+      : t('health.summary', r.count, r.weak, r.reused, r.label);
 
     if (r.issues.length === 0) {
-      listEl.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg><p>${r.count ? 'No weak or reused values.<br/>Your vault is in excellent shape.' : 'Add secrets to see their strength scored here.'}</p></div>`;
+      listEl.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg><p>${r.count ? t('health.empty_clean') : t('health.empty_hint')}</p></div>`;
     } else {
       listEl.innerHTML = r.issues.map(i => `
         <div class="secret-item" style="cursor:default">
@@ -171,8 +175,8 @@ const VaultHealth = (() => {
           </div>
           <div class="secret-item-preview" style="white-space:normal">${Vault.esc(i.detail)}</div>
           <div class="secret-item-meta">
-            <span class="secret-item-date">${Vault.esc(i.cat)}</span>
-            ${i.view ? `<button type="button" class="tool-btn secondary" data-view="${Vault.esc(i.view)}" style="padding:0.3rem 0.75rem;font-size:0.7rem">View in Secrets</button>` : ''}
+            <span class="secret-item-date">${Vault.esc(SecretsModule.catLabel ? SecretsModule.catLabel(i.cat) : i.cat)}</span>
+            ${i.view ? `<button type="button" class="tool-btn secondary" data-view="${Vault.esc(i.view)}" style="padding:0.3rem 0.75rem;font-size:0.7rem">${t('health.view_in_secrets')}</button>` : ''}
           </div>
         </div>`).join('');
       listEl.querySelectorAll('[data-view]').forEach(b =>
@@ -200,10 +204,10 @@ const VaultHealth = (() => {
     let r;
     try { r = analyze(await Vault.getAllSecrets()); } catch (e) { return; }
     if (r.count === 0) {
-      el.textContent = 'Audits strength and reuse across every entry — entirely offline.';
+      el.textContent = t('health.home_card_idle');
       return;
     }
-    el.textContent = `Score ${r.score}/100 · ${r.label}${r.issues.length ? ` · ${r.issues.length} to fix` : ' · all clear'}`;
+    el.textContent = t('health.home_card_score', r.score, r.label, r.issues.length);
   }
 
   return { init, open, close, analyze, refreshScore, labelFor };

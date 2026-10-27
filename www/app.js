@@ -144,8 +144,8 @@ const Dialog = (() => {
     document.getElementById('deleteMsg').textContent = msg;
     const okBtn = document.getElementById('deleteOk');
     const cancelBtn = document.getElementById('deleteCancel');
-    okBtn.textContent = opts.okLabel || 'OK';
-    cancelBtn.textContent = opts.cancelLabel || 'Cancel';
+    okBtn.textContent = opts.okLabel || t('common.ok');
+    cancelBtn.textContent = opts.cancelLabel || t('common.cancel');
     okBtn.classList.toggle('danger-btn', !!opts.danger);
     show('deleteModal');
     return new Promise(res => { confirmRes = res; });
@@ -274,14 +274,14 @@ function _showSetupPinModal() {
       if (window.Capacitor?.Plugins?.ShieldBiometric) {
         try {
           const res = await window.Capacitor.Plugins.ShieldBiometric.isAvailable();
-          if (res.available && await uiConfirm('Biometrics', 'Register fingerprint/face for faster access?', { okLabel: 'Yes', cancelLabel: 'Not now' })) {
+          if (res.available && await uiConfirm(t('lock.biometrics_register_title'), t('lock.biometrics_register_msg'), { okLabel: t('lock.biometrics_register_yes'), cancelLabel: t('lock.biometrics_register_later') })) {
             _biometricUnlock();
           }
         } catch {}
       }
     } else {
       const errEl = document.getElementById('confirmError');
-      if (errEl) errEl.textContent = "PINs don't match — try again";
+      if (errEl) errEl.textContent = t('lock.pins_dont_match');
       confirmDigits.length = 0; // in place — see note above; keeps the pad live
       updateDots(confirmDots, confirmDigits);
       setTimeout(() => { if (errEl) errEl.textContent = ''; }, 2000);
@@ -292,7 +292,7 @@ function _showSetupPinModal() {
 async function _biometricUnlock() {
   if (!window.Capacitor?.Plugins?.ShieldBiometric) return;
   try {
-    const res = await window.Capacitor.Plugins.ShieldBiometric.authenticate({ title: 'Unlock BLACKBOX' });
+    const res = await window.Capacitor.Plugins.ShieldBiometric.authenticate({ title: t('lock.unlock_title') });
     if (res.success) {
       failCount = 0;
       try {
@@ -397,9 +397,9 @@ async function _verifyPin() {
   } else {
     failCount++;
     PinBuddy.reject(); // a small "hands up" to go with the dot shake
-    document.getElementById('lockAttemptInfo').textContent = `Attempt ${failCount}/5`;
+    document.getElementById('lockAttemptInfo').textContent = t('lock.attempt_n', failCount);
     const errEl = document.getElementById('pinError');
-    errEl.textContent = 'Wrong PIN';
+    errEl.textContent = t('lock.wrong_pin');
     const dots = document.querySelectorAll('.pin-display .pin-dot');
     const content = document.querySelector('.lock-content');
     dots.forEach(d => { d.classList.add('error'); });
@@ -435,9 +435,9 @@ function _startLockout() {
       if (numpad) { numpad.style.opacity = ''; numpad.style.pointerEvents = ''; }
       if (el) el.classList.add('hidden');
       const info = document.getElementById('lockAttemptInfo');
-      if (info) info.textContent = failCount > 0 ? `Attempt ${failCount}/5` : '';
+      if (info) info.textContent = failCount > 0 ? t('lock.attempt_n', failCount) : '';
     } else {
-      if (el) el.textContent = `Locked out — wait ${rem}s`;
+      if (el) el.textContent = t('lock.locked_out_wait', rem);
     }
   }, 500);
 }
@@ -448,8 +448,8 @@ function _selfDestruct() {
   Vault.clearAll(); // also wipes the Keystore-backed biometric key
   localStorage.clear();
   try { sessionStorage.clear(); } catch {}
-  document.getElementById('pinError').textContent = 'VAULT WIPED';
-  document.getElementById('lockAttemptInfo').textContent = 'All data destroyed';
+  document.getElementById('pinError').textContent = t('lock.vault_wiped');
+  document.getElementById('lockAttemptInfo').textContent = t('lock.all_data_destroyed');
   setTimeout(() => location.reload(), 2000);
 }
 
@@ -579,7 +579,7 @@ function _calcEquals() {
     case '*': r = calcPrev * cur; break;
     case '/': r = cur === 0 ? NaN : calcPrev / cur; break;
   }
-  if (!isFinite(r)) { d.textContent = 'Error'; calcExpr = ''; calcPrev = null; calcOp = null; calcFresh = true; return; }
+  if (!isFinite(r)) { d.textContent = t('panic.calc_error'); calcExpr = ''; calcPrev = null; calcOp = null; calcFresh = true; return; }
   r = Math.round(r * 1e10) / 1e10;
   calcExpr = String(r);
   d.textContent = calcExpr;
@@ -654,12 +654,12 @@ function _initSettings() {
         shakeEl.checked = false;
         S.shake = false;
         _saveSett();
-        await uiAlert('Shake to Lock', 'This device did not grant motion access, so shake-to-lock could not be enabled.');
+        await uiAlert(t('shake.denied_title'), t('shake.denied_msg'));
         return;
       }
       S.shake = true;
       _saveSett();
-      _toast('Shake to lock enabled');
+      _toast(t('toast.shake_enabled'));
     });
   }
   // This toggle used to be wired to an empty callback, so it rendered checked
@@ -676,29 +676,29 @@ function _initSettings() {
   document.getElementById('changePinBtn')?.addEventListener('click', _changePinFlow);
   document.getElementById('setupDecoyBtn')?.addEventListener('click', _setupDecoyFlow);
   document.getElementById('clearVaultBtn')?.addEventListener('click', async () => {
-    if (await uiConfirm('Clear All Data', 'Delete ALL data permanently? This cannot be undone.', { danger: true, okLabel: 'Delete Everything' })) {
+    if (await uiConfirm(t('settings.clear_all'), t('settings.clear_msg'), { danger: true, okLabel: t('common.delete_everything') })) {
       Vault.clearAll();
-      _toast('Vault cleared', 'red');
+      _toast(t('toast.vault_cleared'), 'red');
     }
   });
   document.getElementById('resetAppBtn')?.addEventListener('click', async () => {
-    if (await uiConfirm('Factory Reset', 'Wipe everything including your PIN and settings?', { danger: true, okLabel: 'Reset App' })) {
+    if (await uiConfirm(t('settings.factory_reset'), t('settings.reset_msg'), { danger: true, okLabel: t('common.reset_app') })) {
       localStorage.clear();
       location.reload();
     }
   });
   document.getElementById('exportSettingsBtn')?.addEventListener('click', async () => {
-    const pass = await uiPrompt('Encrypted Backup', 'Passphrase (min 8 chars) — needed to restore this backup', { type: 'password' });
+    const pass = await uiPrompt(t('backup.title'), t('backup.pass_ph'), { type: 'password' });
     if (pass === null) return;
-    if (pass.length < 8) { await uiAlert('Encrypted Backup', 'Use at least 8 characters so the backup stays safe.'); return; }
-    const confirm2 = await uiPrompt('Encrypted Backup', 'Confirm passphrase', { type: 'password' });
+    if (pass.length < 8) { await uiAlert(t('backup.title'), t('backup.too_short')); return; }
+    const confirm2 = await uiPrompt(t('backup.title'), t('backup.confirm_ph'), { type: 'password' });
     if (confirm2 === null) return;
-    if (confirm2 !== pass) { await uiAlert('Encrypted Backup', "Passphrases don't match — nothing was exported."); return; }
+    if (confirm2 !== pass) { await uiAlert(t('backup.title'), t('backup.mismatch')); return; }
     try { await Vault.exportEncryptedBackup(pass); }
-    catch (e) { await uiAlert('Encrypted Backup', e.message || 'Export failed.'); }
+    catch (e) { await uiAlert(t('backup.title'), e.message || t('backup.export_failed')); }
   });
   document.getElementById('importSettingsBtn')?.addEventListener('click', async () => {
-    const pass = await uiPrompt('Restore Backup', 'Backup passphrase', { type: 'password' });
+    const pass = await uiPrompt(t('backup.restore_title'), t('backup.restore_ph'), { type: 'password' });
     if (pass === null) return;
     document.getElementById('importInput')._pass = pass;
     document.getElementById('importInput')?.click();
@@ -713,10 +713,10 @@ function _initSettings() {
       } else {
         n = await Vault.importBackup(f); // legacy .blackbox (ciphertext merge)
       }
-      _toast(`Imported ${n} items`);
+      _toast(t('toast.imported_n', n));
       _refreshAll();
     } catch (err) {
-      await uiAlert('Import Failed', err.message || 'This file is not a valid BLACKBOX backup.');
+      await uiAlert(t('backup.import_failed_title'), err.message || t('backup.import_failed'));
     }
     e.target.value = '';
   });
@@ -753,95 +753,74 @@ function _saveSett() { localStorage.setItem(SETT_KEY, JSON.stringify(S)); }
 
 /* ── CHANGE PIN — re-encrypts every store with the new PIN's key ── */
 async function _changePinFlow() {
-  const cur = await uiPrompt('Change PIN', 'Current PIN', { type: 'password' });
+  const cur = await uiPrompt(t('pin.change_title'), t('pin.current_ph'), { type: 'password' });
   if (cur === null) return;
-  if (!/^\d{4}$/.test(cur)) { await uiAlert('Change PIN', 'The PIN must be exactly 4 digits.'); return; }
-  if (!PIN || !await Vault.verifyPin(cur, PIN)) { await uiAlert('Change PIN', 'That is not your current PIN.'); return; }
+  if (!/^\d{4}$/.test(cur)) { await uiAlert(t('pin.change_title'), t('pin.must_4')); return; }
+  if (!PIN || !await Vault.verifyPin(cur, PIN)) { await uiAlert(t('pin.change_title'), t('pin.wrong_current')); return; }
 
-  const next = await uiPrompt('Change PIN', 'New 4-digit PIN', { type: 'password' });
+  const next = await uiPrompt(t('pin.change_title'), t('pin.new_ph'), { type: 'password' });
   if (next === null) return;
-  if (!/^\d{4}$/.test(next)) { await uiAlert('Change PIN', 'The new PIN must be exactly 4 digits.'); return; }
-  if (next === cur) { await uiAlert('Change PIN', 'The new PIN must be different from the current one.'); return; }
+  if (!/^\d{4}$/.test(next)) { await uiAlert(t('pin.change_title'), t('pin.new_must_4')); return; }
+  if (next === cur) { await uiAlert(t('pin.change_title'), t('pin.new_different')); return; }
 
-  const confirmPin = await uiPrompt('Change PIN', 'Confirm new PIN', { type: 'password' });
+  const confirmPin = await uiPrompt(t('pin.change_title'), t('pin.confirm_ph'), { type: 'password' });
   if (confirmPin === null) return;
-  if (confirmPin !== next) { await uiAlert('Change PIN', "PINs don't match — nothing was changed."); return; }
+  if (confirmPin !== next) { await uiAlert(t('pin.change_title'), t('pin.change_mismatch')); return; }
 
   try {
     await Vault.changePin(cur, next); // re-encrypts all stores under the new key
     PIN = await Vault.hashPin(next);
     localStorage.setItem(PIN_KEY, PIN);
-    _toast('PIN updated · vault resealed');
+    _toast(t('toast.pin_updated'));
   } catch (err) {
     console.error('PIN change failed:', err);
-    await uiAlert('Change PIN', 'Something went wrong while re-encrypting. Your old PIN still works.');
+    await uiAlert(t('pin.change_title'), t('pin.reencrypt_failed'));
   }
 }
 
 /* ── DECOY PIN ── */
 async function _setupDecoyFlow() {
-  const d = await uiPrompt('Decoy PIN', '4 digits — leave empty to disable', { type: 'password' });
+  const d = await uiPrompt(t('pin.decoy_title'), t('pin.decoy_ph'), { type: 'password' });
   if (d === null) return;
   if (d === '') {
     DECOY_PIN = '';
     localStorage.removeItem(DECOY_KEY);
-    _toast('Decoy disabled');
+    _toast(t('toast.decoy_disabled'));
     return;
   }
-  if (!/^\d{4}$/.test(d)) { await uiAlert('Decoy PIN', 'The decoy must be exactly 4 digits.'); return; }
-  if (PIN && await Vault.verifyPin(d, PIN)) { await uiAlert('Decoy PIN', 'The decoy PIN must be different from your real PIN.'); return; }
+  if (!/^\d{4}$/.test(d)) { await uiAlert(t('pin.decoy_title'), t('pin.decoy_must_4')); return; }
+  if (PIN && await Vault.verifyPin(d, PIN)) { await uiAlert(t('pin.decoy_title'), t('pin.decoy_different')); return; }
   DECOY_PIN = await Vault.hashPin(d);
   localStorage.setItem(DECOY_KEY, DECOY_PIN);
-  _toast('Decoy PIN set');
+  _toast(t('toast.decoy_set'));
 }
 
 /* ── FAQ / PRIVACY POLICY — in-app modal, not native alert() ── */
 async function _showFaq() {
-  const faq = [
-    { q: 'Is BLACKBOX open source?', a: 'Yes. The full source code is available on GitHub under the MIT license.' },
-    { q: 'Where is my data stored?', a: 'All data is stored locally on your device in encrypted form. Nothing is sent to any server.' },
-    { q: 'What if I forget my PIN?', a: 'PIN recovery is impossible by design — there is no backdoor. A factory reset will wipe all data.' },
-    { q: 'Is there cloud sync?', a: 'No. BLACKBOX is offline-only. The only network traffic is an optional manual update check and the one-time speech-model download for voice transcription — neither ever sends your data anywhere.' },
-    { q: 'Does transcription upload my audio?', a: 'No. The first transcription downloads a ~40 MB on-device speech model (Xenova/whisper-tiny.en, OpenAI Whisper tiny converted for browser) from a public CDN, then all speech-to-text runs locally on your device. Audio and transcripts never leave the device; the model is cached, so later transcriptions work fully offline.' },
-    { q: 'How strong is the encryption?', a: 'AES-256-GCM with PBKDF2-SHA256 key derivation (150,000 iterations). Industry standard.' },
-    { q: 'Can I use biometrics?', a: 'Yes, if your device supports fingerprint or face unlock, you can enable it in Settings.' }
-  ];
+  const faq = [1, 2, 3, 4, 5, 6, 7].map(i => ({ q: t('faq.q' + i), a: t('faq.a' + i) }));
   const html = faq.map(f => `<div class="faq-item"><strong>${f.q}</strong><p>${f.a}</p></div>`).join('');
-  document.getElementById('infoTitle').textContent = 'FAQ';
+  document.getElementById('infoTitle').textContent = t('faq.title');
   document.getElementById('infoBody').innerHTML = html;
   document.getElementById('infoModal').classList.remove('hidden');
 }
 
 async function _showPrivacyPolicy() {
-  const pp = `BLACKBOX does not collect, transmit, or share any user data.
-
-• All data is stored locally on your device
-• No analytics, no tracking, no background network calls
-• Optional manual update check (Settings → Check for Updates) fetches the latest release version from GitHub
-• Voice transcription downloads a one-time ~40 MB on-device speech model from a public CDN — model weights only; your audio and transcripts are processed locally and never transmitted
-• No third-party SDKs or services
-• Biometric data never leaves your device (handled by Android)
-• Clipboard content is cleared after 30 seconds
-
-Contact: alpha-1-design via GitHub
-
-Full policy: github.com/alpha-1-design/BLACKBOX/blob/main/SECURITY.md`;
-  await uiAlert('Privacy Policy', pp);
+  await uiAlert(t('policy.title'), t('policy.body'));
 }
 
 /* ── REQUEST A FEATURE — opens the user's mail app, pre-filled ── */
 const FEATURE_EMAIL = 'alpha1.design.dev@gmail.com';
 async function _requestFeature() {
-  const idea = await uiPrompt('Request a Feature', 'What should we build next?', { type: 'text' });
+  const idea = await uiPrompt(t('feature.title'), t('feature.ph'), { type: 'text' });
   if (idea === null) return; // cancelled
-  const body = idea.trim() ? idea.trim() : '(describe your idea)';
+  const body = idea.trim() ? idea.trim() : t('feature.placeholder_body');
   const mailto = 'mailto:' + FEATURE_EMAIL
     + '?subject=' + encodeURIComponent('[Feature] BLACKBOX v' + Updater.currentVersion)
     + '&body=' + encodeURIComponent(body + '\n\n---\nSent from BLACKBOX v' + Updater.currentVersion);
   try {
     window.open(mailto, '_system');
   } catch {
-    await uiAlert('Request a Feature', 'No email app found. You can reach us at ' + FEATURE_EMAIL);
+    await uiAlert(t('feature.title'), t('feature.no_email', FEATURE_EMAIL));
   }
 }
 
@@ -862,30 +841,30 @@ function _notifyIfUpdate() {
 function _markUpdateAvailable(result) {
   const txt = document.getElementById('updateText');
   const sub = document.getElementById('updateSub');
-  if (txt) { txt.textContent = 'Update v' + result.latestVersion + ' Available'; txt.style.color = 'var(--accent)'; }
-  if (sub) sub.textContent = 'Tap to update';
+  if (txt) { txt.textContent = t('update.available_n', result.latestVersion); txt.style.color = 'var(--accent)'; }
+  if (sub) sub.textContent = t('update.tap_to_update');
   const el = document.getElementById('updateStatus');
   if (el) el._updateData = result;
-  _toast('Update v' + result.latestVersion + ' available — Settings › Update', 'green');
+  _toast(t('update.toast_n', result.latestVersion), 'green');
 }
 
 /* ── UPDATES ── */
 async function _checkUpdate() {
   const el = document.getElementById('updateText');
   const sub = document.getElementById('updateSub');
-  el.textContent = 'Checking...';
-  sub.textContent = 'Please wait';
+  el.textContent = t('update.checking');
+  sub.textContent = t('update.please_wait');
   const result = await Updater.check();
   if (result.error) {
-    el.textContent = 'Check for Updates';
-    sub.textContent = result.error + ' — tap to retry';
+    el.textContent = t('update.check');
+    sub.textContent = t('update.error_retry', t('update.err_' + result.error));
     return;
   }
   if (result.updateAvailable) {
     _markUpdateAvailable(result);
   } else {
-    el.textContent = 'BLACKBOX v' + Updater.currentVersion;
-    sub.textContent = 'You are up to date';
+    el.textContent = t('update.version_n', Updater.currentVersion);
+    sub.textContent = t('update.up_to_date');
   }
 }
 
@@ -895,12 +874,24 @@ document.addEventListener('click', async e => {
   if (el.contains(e.target)) {
     const r = el._updateData;
     el._updateData = null;
-    if (await uiConfirm('Update v' + r.latestVersion, 'A new version is available. Where do you want to update?', { okLabel: 'F-Droid', cancelLabel: 'GitHub' })) {
+    if (await uiConfirm(t('update.dialog_title_n', r.latestVersion), t('update.dialog_msg'), { okLabel: t('common.f_droid'), cancelLabel: t('common.github') })) {
       Updater.openFdroid();
     } else {
       Updater.openGitHub();
     }
   }
+});
+
+// Re-render the Settings update row when the language flips so its current
+// state (checking / up-to-date / available) is shown in the new language.
+document.addEventListener('langchange', () => {
+  const row = document.getElementById('updateStatus');
+  if (!row) return;
+  if (row._updateData) { _markUpdateAvailable(row._updateData); return; }
+  const txt = document.getElementById('updateText');
+  const sub = document.getElementById('updateSub');
+  if (txt && txt.textContent) txt.textContent = t('update.check');
+  if (sub && sub.textContent) sub.textContent = t('settings.check_updates_sub');
 });
 
 /* ══════════════════════════════════════════════

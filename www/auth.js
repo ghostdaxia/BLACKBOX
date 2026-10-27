@@ -9,6 +9,7 @@ const AuthModule = (() => {
     document.getElementById('cancelTotpBtn')?.addEventListener('click', closeForm);
     document.getElementById('totpForm')?.addEventListener('submit', async e => { e.preventDefault(); await saveForm(); });
     document.querySelector('#totpModal .modal-backdrop')?.addEventListener('click', closeForm);
+    document.addEventListener('langchange', render);
   }
 
   async function refresh() {
@@ -36,23 +37,23 @@ const AuthModule = (() => {
     }
     empty.classList.add('hidden');
 
-    list.innerHTML = _totps.map(t => `
-      <div class="totp-item" data-id="${t.id}">
+    list.innerHTML = _totps.map(item => `
+      <div class="totp-item" data-id="${item.id}">
         <div class="totp-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
         </div>
         <div class="totp-info">
-          <div class="totp-account">${Vault.esc(t.account)}</div>
+          <div class="totp-account">${Vault.esc(item.account)}</div>
           <div class="totp-code-row">
-            <span class="totp-code" id="code-${t.id}">------</span>
-            <div class="totp-progress"><div class="totp-progress-bar" id="prog-${t.id}"></div></div>
+            <span class="totp-code" id="code-${item.id}">------</span>
+            <div class="totp-progress"><div class="totp-progress-bar" id="prog-${item.id}"></div></div>
           </div>
         </div>
         <div class="totp-actions">
-          <button class="secret-action-btn copy-totp" data-id="${t.id}" title="Copy code">
+          <button class="secret-action-btn copy-totp" data-id="${item.id}" title="${t('auth.copy_code')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           </button>
-          <button class="secret-action-btn delete delete-totp" data-id="${t.id}" title="Delete">
+          <button class="secret-action-btn delete delete-totp" data-id="${item.id}" title="${t('common.delete')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
           </button>
         </div>
@@ -73,8 +74,8 @@ const AuthModule = (() => {
     list.querySelectorAll('.delete-totp').forEach(btn => {
       btn.addEventListener('click', async e => {
         e.stopPropagation();
-        const t = _totps.find(x => x.id === btn.dataset.id);
-        if (t && await uiConfirm('Remove 2FA', `Remove the code for "${t.account}"?`, { danger: true, okLabel: 'Remove' })) {
+        const item = _totps.find(x => x.id === btn.dataset.id);
+        if (item && await uiConfirm(t('auth.delete_title'), t('auth.delete_confirm', item.account), { danger: true, okLabel: t('common.remove') })) {
           await Vault.deleteTotp(btn.dataset.id);
           await refresh();
         }
@@ -149,7 +150,7 @@ const AuthModule = (() => {
     const cleaned = base32.toUpperCase().replace(/=+$/, '').replace(/[^A-Z2-7]/g, '');
     for (const char of cleaned) {
       const val = alphabet.indexOf(char);
-      if (val === -1) throw new Error('Invalid base32');
+      if (val === -1) throw new Error(t('vault.err_invalid_base32'));
       bits += val.toString(2).padStart(5, '0');
     }
     const bytes = new Uint8Array(Math.floor(bits.length / 8));
@@ -177,7 +178,7 @@ const AuthModule = (() => {
     try {
       base32ToBytes(secret.replace(/\s/g, '')); // validate before saving
     } catch {
-      await uiAlert('Invalid Secret', 'That does not look like a valid base32 TOTP secret. Copy it again from your provider.');
+      await uiAlert(t('auth.invalid_secret_title'), t('auth.invalid_secret_body'));
       return;
     }
     await Vault.saveTotp({account, secret, digits});

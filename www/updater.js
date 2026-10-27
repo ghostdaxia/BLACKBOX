@@ -10,7 +10,7 @@ const Updater = {
         headers: { 'Accept': 'application/vnd.github.v3+json' },
         signal: AbortSignal.timeout(10000)
       });
-      if (!res.ok) return { error: 'GitHub API unreachable' };
+      if (!res.ok) return { error: 'github_unreachable' };
       const data = await res.json();
       const latest = (data.tag_name || '').replace(/^v/i, '');
       const current = this.currentVersion;
@@ -24,7 +24,7 @@ const Updater = {
         notes: data.body ? data.body.slice(0, 500) : null
       };
     } catch (e) {
-      return { error: e.name === 'TimeoutError' ? 'Request timed out' : 'No network' };
+      return { error: e.name === 'TimeoutError' ? 'timeout' : 'no_network' };
     }
   },
 

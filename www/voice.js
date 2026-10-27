@@ -42,7 +42,10 @@ const VoiceModule = (() => {
     document.getElementById('voiceDiscardBtn')?.addEventListener('click', discardTake);
     const audio = document.getElementById('voiceAudio');
     if (audio) {
-      audio.addEventListener('ended', () => { _playingId = null; _updatePlayingUI(null); _resetPlayProgress(); _releaseAudioUrl(); });
+      audio.addEventListener('ended', () => { _playingId = null; _updatePlayingUI(null); _resetPlayProgress(); _releaseAudioUrl();
+        const s = document.getElementById('voiceRecStatus');
+        if (s) { delete s.dataset.playing; s.textContent = t('voice.ready'); }
+      });
       audio.addEventListener('timeupdate', () => {
         if (!_playingId) return;
         const item = document.querySelector(`#voiceList .voice-item[data-id="${_playingId}"]`);
@@ -54,7 +57,8 @@ const VoiceModule = (() => {
         const status = document.getElementById('voiceRecStatus');
         if (status && audioEl && audioEl.duration) {
           const fmt = (n) => `${Math.floor(n/60)}:${String(Math.floor(n%60)).padStart(2,'0')}`;
-          status.textContent = `Playing ${fmt(audioEl.currentTime)} / ${fmt(audioEl.duration)}`;
+          status.textContent = t('voice.playing', fmt(audioEl.currentTime), fmt(audioEl.duration));
+          status.dataset.playing = '1';
           status.classList.remove('recording');
         }
       });
@@ -63,6 +67,12 @@ const VoiceModule = (() => {
         // a natural 'ended' already cleared above.
       });
     }
+    document.addEventListener('langchange', () => {
+      if (!document.getElementById('voiceModal')?.classList.contains('hidden')) {
+        refresh();
+        _setRecUI();
+      }
+    });
   }
 
   function open() {
@@ -86,9 +96,8 @@ const VoiceModule = (() => {
        (app.js calls VoiceModule.abort() directly), so the unconditional
        teardown on lock is untouched. */
     if (_recState === 'review') {
-      const ok = await uiConfirm('Discard recording?',
-        'This recording has not been saved yet. Close without saving it?',
-        { danger: true, okLabel: 'Discard' });
+      const ok = await uiConfirm(t('voice.discard_title'), t('voice.discard_confirm_body'),
+        { danger: true, okLabel: t('voice.discard') });
       if (!ok) return;
     }
     abort();
@@ -109,7 +118,7 @@ const VoiceModule = (() => {
       _playingId = null;
       _updatePlayingUI(null);
       const status = document.getElementById('voiceRecStatus');
-      if (status) status.textContent = 'Paused';
+      if (status) { status.textContent = t('voice.paused'); delete status.dataset.playing; }
       return;
     }
     if (_playingId && _playingId !== id) audio.pause();
@@ -124,7 +133,8 @@ const VoiceModule = (() => {
     _playingId = id;
     _updatePlayingUI(id);
     try { await audio.play(); } catch (_) { _playingId = null; _updatePlayingUI(null); _resetPlayProgress();
-    const status = document.getElementById('voiceRecStatus'); if (status) status.textContent = 'Ready'; }
+    const status = document.getElementById('voiceRecStatus');
+    if (status) { delete status.dataset.playing; status.textContent = t('voice.ready'); } }
   }
 
   function _releaseAudioUrl() {
@@ -139,7 +149,7 @@ const VoiceModule = (() => {
     _resetPlayProgress();
     if (!id) {
       const status = document.getElementById('voiceRecStatus');
-      if (status && status.textContent.startsWith('Playing')) status.textContent = 'Ready';
+      if (status && status.dataset.playing) { delete status.dataset.playing; status.textContent = t('voice.ready'); }
     }
     document.querySelectorAll('#voiceList .voice-item').forEach(el => {
       const playing = el.dataset.id === id;
@@ -147,11 +157,11 @@ const VoiceModule = (() => {
       const btn = el.querySelector('.play-btn');
       if (btn) {
         btn.classList.toggle('is-playing', playing);
-        btn.title = playing ? 'Pause' : 'Play';
+        btn.title = playing ? t('voice.pause') : t('voice.play');
         btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
         btn.innerHTML = (playing
-          ? '<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><span>Pause</span>'
-          : '<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 4 20 12 6 20"/></svg><span>Play</span>');
+          ? `<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg><span>${t('voice.pause')}</span>`
+          : `<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 4 20 12 6 20"/></svg><span>${t('voice.play')}</span>`);
       }
     });
   }
@@ -166,8 +176,8 @@ const VoiceModule = (() => {
     if (query) voices = voices.filter(f => f.name.toLowerCase().includes(query) || (f.transcript || '').toLowerCase().includes(query));
     if (voices.length === 0) {
       const emptyMsg = query
-        ? '<p>No voice notes match your search.</p>'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg><p>No voice notes yet.<br/>Tap <strong>Record</strong> to capture your first note.</p>';
+        ? `<p>${t('voice.empty_search')}</p>`
+        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="34" height="34"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg><p>${t('voice.empty_default')}</p>`;
       list.innerHTML = '<div class="empty-state">' + emptyMsg + '</div>';
       return;
     }
@@ -178,24 +188,24 @@ const VoiceModule = (() => {
           <span class="file-name">${Vault.esc(f.name)}</span>
           <span class="file-meta">${typeof f.duration === 'number' ? `<span class="voice-dur">${_fmt(f.duration)}</span> · ` : ''}${Vault.formatSize(f.size)} · ${Vault.relTime(f.ts)}</span>
           ${f.note ? `<div class="voice-note">${Vault.esc(f.note)}</div>` : ''}
-          ${f.transcript ? `<button type="button" class="voice-transcript-toggle" data-transcript="${f.id}">Show transcript</button><div class="voice-transcript hidden" data-transcript-body="${f.id}">${Vault.esc(f.transcript)}</div>` : ''}
+          ${f.transcript ? `<button type="button" class="voice-transcript-toggle" data-transcript="${f.id}">${t('voice.show_transcript')}</button><div class="voice-transcript hidden" data-transcript-body="${f.id}">${Vault.esc(f.transcript)}</div>` : ''}
         </div>
         <div class="secret-item-actions">
-          <button class="secret-action-btn play-btn" data-id="${f.id}" title="Play">
+          <button class="secret-action-btn play-btn" data-id="${f.id}" title="${t('voice.play')}">
             <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><polygon points="6 4 20 12 6 20"/></svg>
-            <span>Play</span>
+            <span>${t('voice.play')}</span>
           </button>
-          <button class="secret-action-btn st-btn" data-id="${f.id}" title="${f.transcript ? 'Show transcript' : 'Transcribe'}">
+          <button class="secret-action-btn st-btn" data-id="${f.id}" data-idle-title="${f.transcript ? t('voice.show_transcript') : t('voice.transcribe')}" title="${f.transcript ? t('voice.show_transcript') : t('voice.transcribe')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="17" x2="12" y2="17"/></svg>
-            <span>${f.transcript ? 'Transcript' : 'Transcribe'}</span>
+            <span>${f.transcript ? t('voice.transcript') : t('voice.transcribe')}</span>
           </button>
-          ${f.transcript ? `<button class="secret-action-btn copy-voice" data-id="${f.id}" title="Copy transcript">
+          ${f.transcript ? `<button class="secret-action-btn copy-voice" data-id="${f.id}" title="${t('voice.copy_transcript')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            <span>Copy</span>
+            <span>${t('common.copy')}</span>
           </button>` : ''}
-          <button class="secret-action-btn delete del-voice" data-id="${f.id}" title="Delete">
+          <button class="secret-action-btn delete del-voice" data-id="${f.id}" title="${t('common.delete')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-            <span>Delete</span>
+            <span>${t('common.delete')}</span>
           </button>
         </div>
       </div>`).join('');
@@ -218,7 +228,7 @@ const VoiceModule = (() => {
       const body = list.querySelector(`[data-transcript-body="${b.dataset.transcript}"]`);
       if (!body) return;
       const open = body.classList.toggle('hidden');
-      b.textContent = open ? 'Show transcript' : 'Hide transcript';
+      b.textContent = open ? t('voice.show_transcript') : t('voice.hide_transcript');
     }));
     list.querySelectorAll('.copy-voice').forEach(b => b.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -231,10 +241,10 @@ const VoiceModule = (() => {
       toast(EncClipboard.copyMessage(res), res.ok ? '' : 'red');
       // The clipboard API can be unavailable (insecure context) — fall back to
       // showing the text so it can still be copied by hand.
-      if (!res.ok) await uiAlert('Clipboard', text || 'No transcript available.');
+      if (!res.ok) await uiAlert(t('voice.clipboard_alert_title'), text || t('voice.no_transcript'));
     }));
     list.querySelectorAll('.del-voice').forEach(b => b.addEventListener('click', async () => {
-      if (await uiConfirm('Delete Voice Note', 'Delete this recording permanently?', { danger: true, okLabel: 'Delete' })) {
+      if (await uiConfirm(t('voice.delete_title'), t('voice.delete_confirm_body'), { danger: true, okLabel: t('common.delete') })) {
         if (_playingId === b.dataset.id) { _playingId = null; }
         const audio = document.getElementById('voiceAudio');
         if (audio) audio.pause();
@@ -285,11 +295,11 @@ const VoiceModule = (() => {
     btn?.classList.toggle('is-paused', _recState === 'paused');
     btn?.setAttribute('aria-pressed', String(live));
     if (btn) btn.disabled = false;
-    if (label) label.textContent = live ? 'Stop' : 'Record';
+    if (label) label.textContent = live ? t('voice.stop') : t('voice.record');
     if (pause) pause.classList.toggle('hidden', !live);
     if (pause) {
-      pause.textContent = _recState === 'paused' ? 'Resume' : 'Pause';
-      pause.setAttribute('aria-label', _recState === 'paused' ? 'Resume recording' : 'Pause recording');
+      pause.textContent = _recState === 'paused' ? t('voice.resume') : t('voice.pause');
+      pause.setAttribute('aria-label', _recState === 'paused' ? t('voice.pause_aria_paused') : t('voice.pause_aria_recording'));
     }
     if (time) {
       time.textContent = _fmt(_liveElapsedMs() / 1000);
@@ -301,10 +311,10 @@ const VoiceModule = (() => {
     actions?.classList.toggle('hidden', _recState !== 'review');
     noteWrap?.classList.toggle('hidden', _recState !== 'review');
     if (status) {
-      status.textContent = _recState === 'recording' ? 'Recording'
-        : _recState === 'paused' ? 'Paused'
-        : _recState === 'review' ? 'Review, then save or discard'
-        : 'Ready';
+      status.textContent = _recState === 'recording' ? t('voice.recording')
+        : _recState === 'paused' ? t('voice.paused')
+        : _recState === 'review' ? t('voice.review_state')
+        : t('voice.ready');
     }
   }
 
@@ -412,24 +422,25 @@ const VoiceModule = (() => {
     const duration = _liveElapsedMs() / 1000;
     const ext = _extForMime(_reviewBlob.type);
     const d = new Date();
-    const name = `Voice note ${d.toLocaleDateString()} ${d.toLocaleTimeString()}.${ext}`;
+    const _dloc = I18n.getLang() === 'zh' ? 'zh-CN' : undefined;
+    const name = t('voice.file_name', d.toLocaleDateString(_dloc), d.toLocaleTimeString(_dloc), ext);
     const saveBtn = _el('voiceSaveBtn');
-    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Sealing…'; }
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = t('voice.sealing'); }
     try {
       await Vault.saveFile(new File([_reviewBlob], name, { type: _reviewBlob.type }), { duration, note });
-      toast('Recording sealed in your vault');
+      toast(t('voice.sealed'));
       _resetRecorderUI();
       await refresh();
     } catch {
-      await uiAlert('Voice notes', 'The recording could not be encrypted and saved.');
+      await uiAlert(t('voice.save_failed_title'), t('voice.save_failed_body'));
     } finally {
-      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save note'; }
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = t('voice.save_note'); }
     }
   }
 
   function discardTake() {
     _resetRecorderUI();
-    toast('Recording discarded');
+    toast(t('voice.recording_discarded'));
   }
 
   /** Stop the microphone and any playback. Called on close and on lock, so a
@@ -438,7 +449,7 @@ const VoiceModule = (() => {
     _aborting = true;
     try { if (_recorder && _recorder.state !== 'inactive') _recorder.stop(); } catch {}
     _recorder = null;
-    if (_mediaStream) { _mediaStream.getTracks().forEach(t => t.stop()); _mediaStream = null; }
+    if (_mediaStream) { _mediaStream.getTracks().forEach(tr => tr.stop()); _mediaStream = null; }
     const prev = _el('voicePreviewAudio');
     if (prev) { prev.pause(); prev.removeAttribute('src'); }
     _playingId = null;
@@ -456,9 +467,8 @@ const VoiceModule = (() => {
        warning and no toast — the exact silent loss the review step exists to
        prevent. Discard is still one tap away for a dud take. */
     if (_recState === 'review') {
-      const go = await uiConfirm('Discard recording?',
-        'You have a recording waiting to be saved. Start a new one and discard it?',
-        { danger: true, okLabel: 'Discard & record' });
+      const go = await uiConfirm(t('voice.discard_new_title'), t('voice.discard_new_body'),
+        { danger: true, okLabel: t('voice.discard_and_record') });
       if (!go) return;
     }
     if (btn) btn.disabled = true;
@@ -470,11 +480,11 @@ const VoiceModule = (() => {
     } catch (e) {
       const err = e && e.name ? e.name : String(e);
       if (err === 'NotAllowedError' || err === 'PermissionDeniedError') {
-        await uiAlert('Microphone', 'Microphone access is required to record voice notes.', { danger: true });
+        await uiAlert(t('voice.mic_title'), t('voice.mic_required'), { danger: true });
       } else if (err === 'NotFoundError' || err === 'DevicesEmptyError') {
-        await uiAlert('Microphone', 'No microphone was found on this device.');
+        await uiAlert(t('voice.mic_title'), t('voice.mic_not_found'));
       } else {
-        await uiAlert('Microphone', 'Could not access the microphone: ' + err);
+        await uiAlert(t('voice.mic_title'), t('voice.mic_error', err));
       }
       if (btn) btn.disabled = false;
       return;
@@ -483,14 +493,14 @@ const VoiceModule = (() => {
     _aborting = false;
     _chunks = [];
     const mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus']
-      .find(t => (typeof MediaRecorder.isTypeSupported === 'function' ? MediaRecorder.isTypeSupported(t) : false));
+      .find(c => (typeof MediaRecorder.isTypeSupported === 'function' ? MediaRecorder.isTypeSupported(c) : false));
     _recorder = mime ? new MediaRecorder(_mediaStream, { mimeType: mime }) : new MediaRecorder(_mediaStream);
     _recorder.ondataavailable = e => { if (e.data && e.data.size) _chunks.push(e.data); };
     _recorder.onstop = () => {
       _stopLevelMeter();
       _commitSegment(); // the take's length is fixed the moment it stops
       if (_tickTimer) { clearInterval(_tickTimer); _tickTimer = null; }
-      if (_mediaStream) { _mediaStream.getTracks().forEach(t => t.stop()); _mediaStream = null; }
+      if (_mediaStream) { _mediaStream.getTracks().forEach(tr => tr.stop()); _mediaStream = null; }
       if (_aborting) { // locked/closed mid-take — drop everything, keep nothing
         _aborting = false;
         _chunks = [];
@@ -516,7 +526,7 @@ const VoiceModule = (() => {
     try {
       _recorder.start(250); // timeslice, so a long note is never one fragile chunk
     } catch {
-      await uiAlert('Microphone', 'Recording could not be started on this device.');
+      await uiAlert(t('voice.mic_title'), t('voice.start_failed'));
       abort();
       return;
     }
@@ -581,7 +591,7 @@ const VoiceModule = (() => {
       if (!stBtn) return;
       stBtn.disabled = busy;
       stBtn.classList.toggle('is-busy', busy);
-      stBtn.title = busy ? 'Transcribing…' : (stBtn.title === 'Transcribing…' ? 'Transcribe' : stBtn.title);
+      stBtn.title = busy ? t('voice.transcribing_aria') : (stBtn.dataset.idleTitle || t('voice.transcribe'));
     };
     setBusy(true);
     // Cancel stops the UI immediately, tells the service worker to tear down
@@ -594,7 +604,7 @@ const VoiceModule = (() => {
       if (statusEl) statusEl.textContent = '';
       _hideProgress();
       setBusy(false);
-      toast('Cancelled');
+      toast(t('voice.cancelled'));
     };
     const stopIfAborted = () => {
       if (controller.signal.aborted) throw new DOMException('Cancelled.', 'AbortError');
@@ -603,11 +613,11 @@ const VoiceModule = (() => {
     try {
       _swPost('bb-reset-external'); // a previous Cancel must not kill this run
       const model = (typeof S !== 'undefined' && S.voiceModel) || 'Xenova/whisper-tiny.en';
-      _setProgress(0, 'Preparing ' + model + ' · on-device');
+      _setProgress(0, t('voice.preparing_model', model));
       progressPanel.classList.remove('hidden');
-      statusEl.textContent = 'Preparing…';
-      titleEl.textContent = 'Downloading ' + model;
-      cancelBtn.textContent = 'Cancel';
+      statusEl.textContent = t('voice.preparing');
+      titleEl.textContent = t('voice.downloading_model', model);
+      cancelBtn.textContent = t('voice.cancel');
       cancelBtn.disabled = false;
       cancelBtn.addEventListener('click', onCancel);
 
@@ -634,14 +644,14 @@ const VoiceModule = (() => {
             frac = p > 1 ? p / 100 : p;
           }
           if (frac === null) return;
-          _setProgress(0.08 + frac * 0.8, model + ' · on-device · Xenova/Hugging Face');
+          _setProgress(0.08 + frac * 0.8, t('voice.model_sub', model));
         },
       });
       stopIfAborted();
 
-      _setProgress(1, 'Transcribing audio…');
-      titleEl.textContent = 'Transcribing with ' + model;
-      statusEl.textContent = 'Transcribing…';
+      _setProgress(1, t('voice.transcribing_audio'));
+      titleEl.textContent = t('voice.transcribing_with', model);
+      statusEl.textContent = t('voice.transcribing_aria');
       ringEl.classList.remove('ring-active');
       await _nextFrame();
       stopIfAborted();
@@ -659,9 +669,9 @@ const VoiceModule = (() => {
         await Vault.setFileTranscript(id, text);
         progressPanel.classList.add('hidden');
         await refresh();
-        toast('Transcript saved to your vault');
+        toast(t('voice.transcript_saved'));
       } else {
-        await uiAlert('Transcribe', 'No speech detected in this recording.');
+        await uiAlert(t('voice.no_speech_title'), t('voice.no_speech_body'));
       }
     } catch (e) {
       if (statusEl) statusEl.textContent = '';
@@ -671,7 +681,7 @@ const VoiceModule = (() => {
         // Cancel: onCancel already stopped the UI and the service worker has
         // torn down the download — nothing else to report.
       } else {
-        await uiAlert('Transcribe', 'Could not run the speech model. Check your connection and try again.');
+        await uiAlert(t('voice.transcribe_failed_title'), t('voice.transcribe_failed_body'));
       }
     } finally {
       cancelBtn.removeEventListener('click', onCancel);
@@ -714,11 +724,11 @@ const VoiceModule = (() => {
   }
 
   function toast(msg, type) {
-    const t = document.createElement('div');
-    t.className = 'toast' + (type === 'red' ? ' red' : ' green');
-    t.textContent = msg;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 2500);
+    const el = document.createElement('div');
+    el.className = 'toast' + (type === 'red' ? ' red' : ' green');
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
   }
 
   function _hideProgress() {

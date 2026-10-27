@@ -38,8 +38,8 @@ const EncClipboard = (() => {
     const res = await copy(text);
     status.style.color = res.ok ? 'var(--green)' : 'var(--red)';
     status.textContent = res.ok
-      ? (res.purges ? 'Copied · clipboard clears in 30 seconds' : 'Copied · auto-clear is off (Home → Clipboard)')
-      : 'Copy failed — grant clipboard permission';
+      ? (res.purges ? t('clip.copied_30s') : t('clip.copied_off'))
+      : t('clip.copy_failed');
   }
 
   /** Write text and arm the purge. Returns whether the write actually landed.
@@ -73,8 +73,8 @@ const EncClipboard = (() => {
   /** Single source of wording for a copy result, so no call site can announce
    *  a purge that was never armed. */
   function copyMessage(res) {
-    if (!res || !res.ok) return 'Copy failed — grant clipboard permission';
-    return res.purges ? 'Copied · clears in 30s' : 'Copied · auto-clear is off';
+    if (!res || !res.ok) return t('clip.copy_failed');
+    return res.purges ? t('clip.copied_clears_30s') : t('clip.copied_off_short');
   }
 
   async function _purge() {
@@ -85,7 +85,7 @@ const EncClipboard = (() => {
     const input = document.getElementById('clipInput');
     if (input) input.value = '';
     const status = document.getElementById('clipStatus');
-    if (status) { status.textContent = 'Clipboard cleared'; status.style.color = 'var(--text3)'; }
+    if (status) { status.textContent = t('clip.cleared'); status.style.color = 'var(--text3)'; }
   }
 
   function clear() {

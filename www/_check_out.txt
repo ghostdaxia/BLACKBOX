@@ -1,0 +1,1 @@
+OK: all static and dynamic i18n keys resolve in EN and ZH.

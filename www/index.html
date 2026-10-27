@@ -13,6 +13,7 @@
   <link rel="manifest" href="manifest.json"/>
   <link rel="stylesheet" href="styles.css"/>
   <script src="updater.js"></script>
+  <script src="i18n.js"></script>
 </head>
 <body>
 
@@ -21,10 +22,10 @@
 	  <div class="modal-backdrop"></div>
 	  <div class="modal-box">
 	    <div class="modal-topbar">
-	      <span class="modal-title">Secure Your Vault</span>
+	      <span class="modal-title" data-i18n="lock.secure_your_vault">Secure Your Vault</span>
 	    </div>
 	    <div class="modal-body-scroll">
-	      <p>Welcome to BLACKBOX. Please set a 4-digit PIN to encrypt your data. This cannot be recovered if lost.</p>
+	      <p data-i18n="lock.welcome_setup">Welcome to BLACKBOX. Please set a 4-digit PIN to encrypt your data. This cannot be recovered if lost.</p>
 	      <div class="pin-setup-display">
 	        <span class="pin-dot" id="sd0"></span>
 	        <span class="pin-dot" id="sd1"></span>
@@ -109,14 +110,14 @@
       <button class="num-key" data-digit="7">7</button>
       <button class="num-key" data-digit="8">8</button>
       <button class="num-key" data-digit="9">9</button>
-      <button class="num-key decoy-key" id="decoyBtn">DECOY</button>
+      <button class="num-key decoy-key" id="decoyBtn" data-i18n="lock.decoy">DECOY</button>
       <button class="num-key" data-digit="0">0</button>
       <button class="num-key del-key" id="delBtn">⌫</button>
     </div>
     <div class="lock-bottom-row">
       <button class="lock-bio-btn" id="biometricBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a3 3 0 0 0-3 3v3m0-9.5a6.5 6.5 0 0 1 6.5 6.5v3"/><path d="M12 5a9 9 0 0 1 9 9v3.5"/><path d="M3 14a9 9 0 0 1 4.5-7.8"/><path d="M9 21v-4.6a2.5 2.5 0 0 1 5 0V21"/></svg>
-        <span>Fingerprint</span>
+        <span data-i18n="lock.fingerprint">Fingerprint</span>
       </button>
     </div>
   </div>
@@ -127,10 +128,10 @@
   <div class="modal-backdrop"></div>
   <div class="modal-box">
     <div class="modal-topbar">
-      <span class="modal-title">Confirm Your PIN</span>
+      <span class="modal-title" data-i18n="lock.confirm_pin">Confirm Your PIN</span>
     </div>
     <div class="modal-body-scroll">
-      <p>Re-enter the same 4 digits to make sure there was no typo.</p>
+      <p data-i18n="lock.confirm_subtitle">Re-enter the same 4 digits to make sure there was no typo.</p>
       <div class="pin-setup-display">
         <span class="pin-dot" id="cp0"></span>
         <span class="pin-dot" id="cp1"></span>
@@ -168,7 +169,7 @@
     <div class="modal-body-scroll">
       <div id="infoBody" class="info-body"></div>
       <div class="modal-actions-row">
-        <button type="button" class="modal-save" id="infoOk">OK</button>
+        <button type="button" class="modal-save" id="infoOk" data-i18n="dialog.ok">OK</button>
       </div>
     </div>
   </div>
@@ -184,17 +185,17 @@
     <div class="modal-body-scroll">
       <p id="deleteMsg" class="confirm-msg"></p>
       <div class="modal-actions-row">
-        <button type="button" class="modal-cancel" id="deleteCancel">Cancel</button>
-        <button type="button" class="modal-save" id="deleteOk">OK</button>
+        <button type="button" class="modal-cancel" id="deleteCancel" data-i18n="dialog.cancel">Cancel</button>
+        <button type="button" class="modal-save" id="deleteOk" data-i18n="dialog.ok">OK</button>
       </div>
     </div>
   </div>
 </div>  <!-- VOICE NOTES PANEL (full-screen sheet) -->
-<div id="voiceModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Voice notes">
+<div id="voiceModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Voice notes" data-i18n-aria-label="voice.title">
   <div class="modal-backdrop"></div>
   <div class="modal-box voice-panel">
     <div class="modal-topbar">
-      <span class="modal-title">Voice Notes</span>
+      <span class="modal-title" data-i18n="voice.title">Voice Notes</span>
       <button class="modal-close-btn" id="closeVoiceModal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -203,27 +204,27 @@
       <div class="voice-rec-row">
         <button type="button" class="rec-btn" id="voiceRecordBtn" aria-pressed="false">
           <svg class="mic-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0014 0"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-          <span id="voiceRecLabel">Record</span>
+          <span id="voiceRecLabel" data-i18n="voice.record">Record</span>
         </button>
-        <button type="button" class="tool-btn secondary rec-pause hidden" id="voicePauseBtn" aria-label="Pause recording">Pause</button>
+        <button type="button" class="tool-btn secondary rec-pause hidden" id="voicePauseBtn" aria-label="Pause recording" data-i18n="voice.pause" data-i18n-aria-label="voice.pause_aria_recording">Pause</button>
         <div class="rec-meter" id="voiceRecMeter" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
         <span class="rec-time" id="voiceRecTime">0:00</span>
       </div>
-      <span id="voiceRecStatus" class="file-meta">Ready</span>
+      <span id="voiceRecStatus" class="file-meta" data-i18n="voice.ready">Ready</span>
       <div class="voice-rec-actions hidden" id="voiceRecActions">
-        <button type="button" class="tool-btn secondary" id="voicePreviewBtn">Preview</button>
-        <button type="button" class="tool-btn" id="voiceSaveBtn">Save note</button>
-        <button type="button" class="tool-btn secondary" id="voiceDiscardBtn">Discard</button>
+        <button type="button" class="tool-btn secondary" id="voicePreviewBtn" data-i18n="voice.preview">Preview</button>
+        <button type="button" class="tool-btn" id="voiceSaveBtn" data-i18n="voice.save_note">Save note</button>
+        <button type="button" class="tool-btn secondary" id="voiceDiscardBtn" data-i18n="voice.discard">Discard</button>
       </div>
       <div class="voice-rec-note hidden" id="voiceRecNoteWrap">
-        <input type="text" id="voiceRecNote" class="form-input" placeholder="Add a note about this recording…" autocomplete="off"/>
+        <input type="text" id="voiceRecNote" class="form-input" placeholder="Add a note about this recording…" autocomplete="off" data-i18n-ph="voice.note_ph"/>
       </div>
       <audio id="voicePreviewAudio" hidden></audio>
-      <input type="search" id="voiceSearch" class="voice-search" placeholder="Search voice notes…" aria-label="Search voice notes" />
+      <input type="search" id="voiceSearch" class="voice-search" placeholder="Search voice notes…" aria-label="Search voice notes" data-i18n-ph="voice.search_ph" data-i18n-aria-label="voice.search_aria" />
       <div class="voice-list" id="voiceList"></div>
       <audio id="voiceAudio" hidden></audio>
       <div class="modal-actions-row">
-        <button type="button" class="modal-cancel" id="cancelVoiceBtn">Close</button>
+        <button type="button" class="modal-cancel" id="cancelVoiceBtn" data-i18n="common.close">Close</button>
       </div>
     </div>
   </div>
@@ -248,13 +249,13 @@
   <div class="modal-backdrop"></div>
   <div class="modal-box">
     <div class="modal-topbar">
-      <span class="modal-title" id="promptTitle">Input</span>
+      <span class="modal-title" id="promptTitle" data-i18n="dialog.input_title">Input</span>
     </div>
     <div class="modal-body-scroll">
       <input type="text" id="promptInput" class="form-input" autocomplete="off"/>
       <div class="modal-actions-row">
-        <button type="button" class="modal-cancel" id="promptCancel">Cancel</button>
-        <button type="button" class="modal-save" id="promptOk">OK</button>
+        <button type="button" class="modal-cancel" id="promptCancel" data-i18n="dialog.cancel">Cancel</button>
+        <button type="button" class="modal-save" id="promptOk" data-i18n="dialog.ok">OK</button>
       </div>
     </div>
   </div>
@@ -266,44 +267,44 @@
   <div class="modal-backdrop"></div>
   <div class="modal-box">
     <div class="modal-topbar">
-      <span class="modal-title">Password Generator</span>
+      <span class="modal-title" data-i18n="gen.title">Password Generator</span>
       <button class="modal-close-btn" id="closeGenModal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-body-scroll">
       <div class="form-group">
-        <span class="form-label">Password</span>
+        <span class="form-label" data-i18n="gen.password">Password</span>
         <input type="text" id="genOutput" class="form-input" readonly spellcheck="false" autocomplete="off"
                style="font-family:var(--mono);font-size:0.95rem;letter-spacing:0.03em;user-select:text;-webkit-user-select:text"/>
         <div id="genEntropy" class="clip-status">—</div>
       </div>
       <div class="form-group">
-        <span class="form-label">Length — <span id="genLenVal">20</span> characters</span>
+        <span class="form-label"><span data-i18n="gen.length">Length —</span> <span id="genLenVal">20</span> <span data-i18n="gen.length_chars" data-i18n-args="20">characters</span></span>
         <input type="range" id="genLength" min="8" max="64" value="20" class="form-input" style="padding:0.45rem 0.3rem"/>
       </div>
       <div class="settings-group" style="margin-top:0.2rem">
         <div class="settings-item">
-          <div class="si-text"><strong>Uppercase</strong><small>A – Z</small></div>
+          <div class="si-text"><strong data-i18n="gen.uppercase">Uppercase</strong><small data-i18n="gen.uppercase_range">A – Z</small></div>
           <label class="toggle-switch"><input type="checkbox" id="genUpper" checked/><span class="toggle-track"></span></label>
         </div>
         <div class="settings-item">
-          <div class="si-text"><strong>Lowercase</strong><small>a – z</small></div>
+          <div class="si-text"><strong data-i18n="gen.lowercase">Lowercase</strong><small data-i18n="gen.lowercase_range">a – z</small></div>
           <label class="toggle-switch"><input type="checkbox" id="genLower" checked/><span class="toggle-track"></span></label>
         </div>
         <div class="settings-item">
-          <div class="si-text"><strong>Numbers</strong><small>0 – 9</small></div>
+          <div class="si-text"><strong data-i18n="gen.numbers">Numbers</strong><small data-i18n="gen.numbers_range">0 – 9</small></div>
           <label class="toggle-switch"><input type="checkbox" id="genDigit" checked/><span class="toggle-track"></span></label>
         </div>
         <div class="settings-item">
-          <div class="si-text"><strong>Symbols</strong><small>! @ # $ % &amp; * ( ) …</small></div>
+          <div class="si-text"><strong data-i18n="gen.symbols">Symbols</strong><small>! @ # $ % &amp; * ( ) …</small></div>
           <label class="toggle-switch"><input type="checkbox" id="genSymbol" checked/><span class="toggle-track"></span></label>
         </div>
       </div>
       <div class="modal-actions-row">
-        <button type="button" class="modal-cancel" id="genRefresh">Regenerate</button>
-        <button type="button" class="modal-save" id="genCopy">Copy</button>
-        <button type="button" class="modal-save hidden" id="genUse">Use in secret</button>
+        <button type="button" class="modal-cancel" id="genRefresh" data-i18n="common.regenerate">Regenerate</button>
+        <button type="button" class="modal-save" id="genCopy" data-i18n="common.copy">Copy</button>
+        <button type="button" class="modal-save hidden" id="genUse" data-i18n="gen.use_in_secret">Use in secret</button>
       </div>
     </div>
   </div>
@@ -314,7 +315,7 @@
   <div class="modal-backdrop"></div>
   <div class="modal-box">
     <div class="modal-topbar">
-      <span class="modal-title">Vault Health</span>
+      <span class="modal-title" data-i18n="health.title">Vault Health</span>
       <button class="modal-close-btn" id="closeHealthModal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -322,11 +323,11 @@
     <div class="modal-body-scroll">
       <div style="text-align:center;padding:0.7rem 0 0.2rem">
         <div id="healthScore" class="journal-read-title" style="font-size:2.8rem;margin-bottom:0.1rem">···</div>
-        <div id="healthSummary" class="clip-status" style="text-align:center">Scanning your vault…</div>
+        <div id="healthSummary" class="clip-status" style="text-align:center" data-i18n="health.scanning">Scanning your vault…</div>
       </div>
       <div id="healthList" class="secrets-list" style="margin-top:0.8rem"></div>
       <div class="modal-actions-row">
-        <button type="button" class="modal-save" id="healthRescan">Re-scan</button>
+        <button type="button" class="modal-save" id="healthRescan" data-i18n="health.rescan">Re-scan</button>
       </div>
     </div>
   </div>
@@ -335,7 +336,7 @@
 <!-- PANIC CALCULATOR -->
 <div id="panicOverlay" class="panic-overlay hidden">
   <div class="panic-content">
-    <div class="calc-title">Calculator</div>
+    <div class="calc-title" data-i18n="panic.calc_title">Calculator</div>
     <div class="calc-display" id="calcDisplay">0</div>
     <div class="calc-grid">
       <button class="calc-btn op" data-calc="AC">AC</button>
@@ -358,7 +359,7 @@
       <button class="calc-btn" data-calc=".">.</button>
       <button class="calc-btn accent" data-calc="=">=</button>
     </div>
-    <div class="calc-exit-hint">tap 5× to exit</div>
+    <div class="calc-exit-hint" data-i18n="panic.exit_hint">tap 5× to exit</div>
   </div>
 </div>
 
@@ -376,7 +377,7 @@
       <span>BLACKBOX</span>
     </div>
     <div class="header-actions">
-      <button class="icon-btn panic-btn" id="panicBtn" title="Panic mode" aria-label="Panic mode — hide the app behind a calculator">
+      <button class="icon-btn panic-btn" id="panicBtn" title="Panic mode" aria-label="Panic mode — hide the app behind a calculator" data-i18n-title="panic.mode" data-i18n-aria-label="panic.mode_aria">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
       </button>
     </div>
@@ -391,76 +392,76 @@
           <rect x="19" y="20" width="10" height="20" rx="2"/>
           <circle cx="24" cy="25" r="2"/>
         </svg>
-        <h1>Your secrets.<br/><em>Your rules.</em></h1>
-        <p class="sub">AES-256-GCM. Zero servers. Zero tracking.</p>
+        <h1 data-i18n="home.greeting">Your secrets.<br/><em>Your rules.</em></h1>
+        <p class="sub" data-i18n="home.sub">AES-256-GCM. Zero servers. Zero tracking.</p>
       </div>
       <div class="quick-actions">
         <button class="qa-card" data-goto="secrets">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <div><div class="qa-label">Secrets</div><div class="qa-sub">Every credential, encrypted at rest</div></div>
+          <div><div class="qa-label" data-i18n="home.qa_secrets">Secrets</div><div class="qa-sub" data-i18n="home.qa_secrets_sub">Every credential, encrypted at rest</div></div>
         </button>
         <button class="qa-card" data-goto="journal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          <div><div class="qa-label">Journal</div><div class="qa-sub">A private journal, sealed entry by entry</div></div>
+          <div><div class="qa-label" data-i18n="home.qa_journal">Journal</div><div class="qa-sub" data-i18n="home.qa_journal_sub">A private journal, sealed entry by entry</div></div>
         </button>
         <button class="qa-card" data-goto="auth">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          <div><div class="qa-label">Auth</div><div class="qa-sub">Two-factor codes, one tap away</div></div>
+          <div><div class="qa-label" data-i18n="home.qa_auth">Auth</div><div class="qa-sub" data-i18n="home.qa_auth_sub">Two-factor codes, one tap away</div></div>
         </button>
         <button class="qa-card" data-goto="privacy">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <div><div class="qa-label">Privacy</div><div class="qa-sub">Audits, trackers &amp; link screening</div></div>
+          <div><div class="qa-label" data-i18n="home.qa_privacy">Privacy</div><div class="qa-sub" data-i18n="home.qa_privacy_sub">Audits, trackers &amp; link screening</div></div>
         </button>
       </div>
       <div class="feature-cards">
         <div class="feat-card">
           <div class="feat-header">
-            <span class="feat-title">Voice Notes</span>
+            <span class="feat-title" data-i18n="home.feat_voice_notes">Voice Notes</span>
           </div>
-          <p>Record, replay and transcribe — every word sealed in your vault, transcribed on-device.</p>
-          <button class="tool-btn" id="voiceCard" style="margin-top:0.6rem">Open Voice Notes</button>
+          <p data-i18n="home.feat_voice_notes_body">Record, replay and transcribe — every word sealed in your vault, transcribed on-device.</p>
+          <button class="tool-btn" id="voiceCard" style="margin-top:0.6rem" data-i18n="home.feat_voice_open">Open Voice Notes</button>
         </div>
         <div class="feat-card">
           <div class="feat-header">
-            <span class="feat-title">Clipboard</span>
+            <span class="feat-title" data-i18n="home.feat_clipboard">Clipboard</span>
             <label class="toggle-switch"><input type="checkbox" id="clipAutoClear" checked/><span class="toggle-track"></span></label>
           </div>
-          <p>Copies are encrypted at rest, and the clipboard purges itself after 30 seconds.</p>
+          <p data-i18n="home.feat_clipboard_body">Copies are encrypted at rest, and the clipboard purges itself after 30 seconds.</p>
         </div>
         <div class="feat-card">
           <div class="feat-header">
-            <span class="feat-title">Overlay Dim</span>
+            <span class="feat-title" data-i18n="home.feat_overlay_dim">Overlay Dim</span>
             <label class="toggle-switch"><input type="checkbox" id="overlayToggle"/><span class="toggle-track"></span></label>
           </div>
-          <p>A privacy shade for shared spaces — dim the screen without leaving the app.</p>
+          <p data-i18n="home.feat_overlay_dim_body">A privacy shade for shared spaces — dim the screen without leaving the app.</p>
         </div>
         <div class="feat-card">
           <div class="feat-header">
-            <span class="feat-title">Auto-lock</span>
+            <span class="feat-title" data-i18n="home.feat_auto_lock">Auto-lock</span>
             <label class="toggle-switch"><input type="checkbox" id="autoLockToggle" checked/><span class="toggle-track"></span></label>
           </div>
-          <p>Seals the vault automatically after 30 seconds of inactivity.</p>
+          <p data-i18n="home.feat_auto_lock_body">Seals the vault automatically after 30 seconds of inactivity.</p>
         </div>
         <div class="feat-card">
           <div class="feat-header">
-            <span class="feat-title">Password Generator</span>
+            <span class="feat-title" data-i18n="home.feat_password_gen">Password Generator</span>
           </div>
-          <p>Cryptographically random passwords with live entropy — generated on-device.</p>
-          <button class="tool-btn" id="openGenBtn" style="margin-top:0.6rem">Open generator</button>
+          <p data-i18n="home.feat_password_gen_body">Cryptographically random passwords with live entropy — generated on-device.</p>
+          <button class="tool-btn" id="openGenBtn" style="margin-top:0.6rem" data-i18n="home.feat_password_gen_open">Open generator</button>
         </div>
         <div class="feat-card">
           <div class="feat-header">
-            <span class="feat-title">Vault Health</span>
+            <span class="feat-title" data-i18n="home.feat_vault_health">Vault Health</span>
           </div>
-          <p id="healthScoreLine">Audits strength and reuse across every entry — entirely offline.</p>
-          <button class="tool-btn secondary" id="openHealthBtn" style="margin-top:0.6rem">Run health check</button>
+          <p id="healthScoreLine" data-i18n="home.feat_vault_health_body">Audits strength and reuse across every entry — entirely offline.</p>
+          <button class="tool-btn secondary" id="openHealthBtn" style="margin-top:0.6rem" data-i18n="home.feat_vault_health_run">Run health check</button>
         </div>
       </div>
       <div class="clipboard-section">
-        <textarea id="clipInput" class="clip-input" placeholder="Paste sensitive text — encrypted on save, cleared from the clipboard after 30 seconds…"></textarea>
+        <textarea id="clipInput" class="clip-input" placeholder="Paste sensitive text — encrypted on save, cleared from the clipboard after 30 seconds…" data-i18n-ph="home.clip_placeholder"></textarea>
         <div class="clip-actions">
-          <button class="clip-btn" id="clipSaveBtn">Copy Encrypted</button>
-          <button class="clip-btn secondary" id="clipClearBtn">Clear</button>
+          <button class="clip-btn" id="clipSaveBtn" data-i18n="home.clip_copy_encrypted">Copy Encrypted</button>
+          <button class="clip-btn secondary" id="clipClearBtn" data-i18n="home.clip_clear">Clear</button>
         </div>
         <div id="clipStatus" class="clip-status"></div>
       </div>
@@ -471,43 +472,43 @@
   <div class="tab-content hidden" id="tab-secrets">
     <div class="page-inner">
       <div class="tab-header">
-        <h2>Secrets</h2>
+        <h2 data-i18n="secrets.title">Secrets</h2>
         <div class="header-actions">
-          <button class="add-btn" id="filesToggleBtn" title="Encrypted files">Files</button>
-          <button class="add-btn" id="sendPkgBtn" title="Send an encrypted package">Send</button>
-          <button class="add-btn" id="openPkgBtn" title="Open a .bbshare package">Open</button>
+          <button class="add-btn" id="filesToggleBtn" title="Encrypted files" data-i18n="secrets.files_btn" data-i18n-title="secrets.files_btn_title">Files</button>
+          <button class="add-btn" id="sendPkgBtn" title="Send an encrypted package" data-i18n="secrets.send_btn" data-i18n-title="secrets.send_btn_title">Send</button>
+          <button class="add-btn" id="openPkgBtn" title="Open a .bbshare package" data-i18n="secrets.open_btn" data-i18n-title="secrets.open_btn_title">Open</button>
           <button class="add-btn" id="addSecretBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add
+            <span data-i18n="common.add">Add</span>
           </button>
         </div>
       </div>
       <div class="search-bar">
-        <input type="search" id="secretsSearch" placeholder="Search secrets…" class="search-input"/>
+        <input type="search" id="secretsSearch" placeholder="Search secrets…" class="search-input" data-i18n-ph="secrets.search_ph"/>
       </div>
       <div class="category-pills" id="secretPills">
-        <button class="pill active" data-cat="all">All</button>
-        <button class="pill" data-cat="api">API Keys</button>
-        <button class="pill" data-cat="db">Database</button>
-        <button class="pill" data-cat="ssh">SSH</button>
-        <button class="pill" data-cat="password">Passwords</button>
-        <button class="pill" data-cat="other">Other</button>
+        <button class="pill active" data-cat="all" data-i18n="secrets.cat_all">All</button>
+        <button class="pill" data-cat="api" data-i18n="secrets.cat_api">API Keys</button>
+        <button class="pill" data-cat="db" data-i18n="secrets.cat_db">Database</button>
+        <button class="pill" data-cat="ssh" data-i18n="secrets.cat_ssh">SSH</button>
+        <button class="pill" data-cat="password" data-i18n="secrets.cat_password">Passwords</button>
+        <button class="pill" data-cat="other" data-i18n="secrets.cat_other">Other</button>
       </div>
       <div class="secrets-list" id="secretsList"></div>
 
       <!-- Encrypted File Vault -->
       <div class="files-section hidden" id="filesSection">
         <div class="files-header">
-          <h3>Files &amp; Photos</h3>
+          <h3 data-i18n="files.title">Files &amp; Photos</h3>
           <div class="header-actions">
-            <button class="tool-btn secondary" id="importFileBtn">Import</button>
-            <button class="tool-btn secondary" id="closeFilesBtn">Close</button>
+            <button class="tool-btn secondary" id="importFileBtn" data-i18n="common.import">Import</button>
+            <button class="tool-btn secondary" id="closeFilesBtn" data-i18n="common.close">Close</button>
           </div>
         </div>
-        <p class="files-hint">Encrypted at rest with AES-256-GCM. Exports are written to Documents/BLACKBOX/.</p>
+        <p class="files-hint" data-i18n="files.hint">Encrypted at rest with AES-256-GCM. Exports are written to Documents/BLACKBOX/.</p>
         <div class="files-view-row" id="filesViewToggle">
-          <button type="button" class="view-tab active" id="filesViewList">List</button>
-          <button type="button" class="view-tab" id="filesViewGallery">Gallery</button>
+          <button type="button" class="view-tab active" id="filesViewList" data-i18n="files.view_list">List</button>
+          <button type="button" class="view-tab" id="filesViewGallery" data-i18n="files.view_gallery">Gallery</button>
         </div>
         <div class="files-list" id="filesList"></div>
         <div class="photo-grid hidden" id="filesGrid"></div>
@@ -520,29 +521,29 @@
       <div class="modal-backdrop"></div>
       <div class="modal-box">
         <div class="modal-topbar">
-          <span class="modal-title">Send Encrypted Package</span>
+          <span class="modal-title" data-i18n="files.send_title">Send Encrypted Package</span>
           <button class="modal-close-btn" id="closeSendModal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
         <form id="sendForm" class="modal-form">
           <label class="form-group">
-            <span class="form-label">File — photo, recording, anything</span>
-            <button type="button" class="tool-btn secondary" id="pickPkgFile">Choose file…</button>
+            <span class="form-label" data-i18n="files.send_file_label">File — photo, recording, anything</span>
+            <button type="button" class="tool-btn secondary" id="pickPkgFile" data-i18n="files.send_choose_file">Choose file…</button>
             <span id="pkgFileName" class="form-label" style="color:var(--text3);font-size:0.72rem"></span>
             <input type="file" id="pkgFileInput" hidden/>
           </label>
           <label class="form-group">
-            <span class="form-label">Message (optional)</span>
-            <textarea id="pkgMessage" class="form-input form-textarea" placeholder="See attached…"></textarea>
+            <span class="form-label" data-i18n="files.send_message_label">Message (optional)</span>
+            <textarea id="pkgMessage" class="form-input form-textarea" placeholder="See attached…" data-i18n-ph="files.send_message_ph"></textarea>
           </label>
           <label class="form-group">
-            <span class="form-label">Shared PIN (min 4 chars — agree on it privately)</span>
+            <span class="form-label" data-i18n="files.send_pin_label">Shared PIN (min 4 chars — agree on it privately)</span>
             <input type="password" id="pkgPin" class="form-input" autocomplete="off" required/>
           </label>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="cancelSendBtn">Cancel</button>
-            <button type="submit" class="modal-save">Create .bbshare</button>
+            <button type="button" class="modal-cancel" id="cancelSendBtn" data-i18n="common.cancel">Cancel</button>
+            <button type="submit" class="modal-save" data-i18n="files.send_create">Create .bbshare</button>
           </div>
         </form>
       </div>
@@ -553,31 +554,31 @@
       <div class="modal-backdrop"></div>
       <div class="modal-box">
         <div class="modal-topbar">
-          <span class="modal-title">Open Package</span>
+          <span class="modal-title" data-i18n="files.open_title">Open Package</span>
           <button class="modal-close-btn" id="closeOpenModal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
         <div class="modal-form">
           <label class="form-group">
-            <span class="form-label">.bbshare file</span>
-            <button type="button" class="tool-btn secondary" id="pickOpenFile">Choose file…</button>
+            <span class="form-label" data-i18n="files.open_file_label">.bbshare file</span>
+            <button type="button" class="tool-btn secondary" id="pickOpenFile" data-i18n="files.send_choose_file">Choose file…</button>
             <span id="openFileName" class="form-label" style="color:var(--text3);font-size:0.72rem"></span>
             <input type="file" id="openPkgInput" accept=".bbshare,application/json" hidden/>
           </label>
           <label class="form-group">
-            <span class="form-label">Shared PIN</span>
+            <span class="form-label" data-i18n="files.open_pin_label">Shared PIN</span>
             <input type="password" id="openPkgPin" class="form-input" autocomplete="off"/>
           </label>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="cancelOpenBtn">Close</button>
-            <button type="button" class="modal-save" id="unlockPkgBtn">Decrypt</button>
+            <button type="button" class="modal-cancel" id="cancelOpenBtn" data-i18n="common.close">Close</button>
+            <button type="button" class="modal-save" id="unlockPkgBtn" data-i18n="files.open_decrypt">Decrypt</button>
           </div>
           <div id="pkgOpenResult" class="hidden">
-            <div class="faq-item"><strong>Message</strong><p id="pkgMsgOut"></p></div>
-            <div class="faq-item"><strong>Attached file</strong><p id="pkgFileOut"></p></div>
+            <div class="faq-item"><strong data-i18n="files.open_message_label">Message</strong><p id="pkgMsgOut"></p></div>
+            <div class="faq-item"><strong data-i18n="files.open_attached_label">Attached file</strong><p id="pkgFileOut"></p></div>
             <div class="modal-actions-row" style="margin-top:0.6rem">
-              <button type="button" class="modal-save" id="savePkgFileBtn">Save file to Documents/BLACKBOX</button>
+              <button type="button" class="modal-save" id="savePkgFileBtn" data-i18n="files.open_save_to">Save file to Documents/BLACKBOX</button>
             </div>
           </div>
         </div>
@@ -588,15 +589,15 @@
       <div class="modal-backdrop"></div>
       <div class="modal-box">
         <div class="modal-topbar">
-          <span class="modal-title" id="secretModalTitle">New Secret</span>
+          <span class="modal-title" id="secretModalTitle" data-i18n="secrets.modal_new">New Secret</span>
           <div class="modal-topbar-actions">
-            <button type="button" class="modal-more-btn hidden" id="secretMoreBtn" title="More options" aria-label="More options">
+            <button type="button" class="modal-more-btn hidden" id="secretMoreBtn" title="More options" aria-label="More options" data-i18n-title="secrets.more_title" data-i18n-aria-label="secrets.more_title">
               <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
             </button>
             <div class="modal-more-menu" id="secretMoreMenu">
-              <button type="button" class="modal-more-item hidden" id="secretMoreEdit">Edit secret</button>
+              <button type="button" class="modal-more-item hidden" id="secretMoreEdit" data-i18n="secrets.more_edit">Edit secret</button>
               <div class="modal-more-divider hidden" id="secretMoreEditDiv"></div>
-              <button type="button" class="modal-more-item danger hidden" id="secretDelete">Delete secret</button>
+              <button type="button" class="modal-more-item danger hidden" id="secretDelete" data-i18n="secrets.more_delete">Delete secret</button>
             </div>
             <button class="modal-close-btn" id="closeSecretModal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -605,36 +606,36 @@
         </div>
         <form id="secretForm" class="modal-form">
           <label class="form-group">
-            <span class="form-label">Name</span>
-            <input type="text" id="secretName" class="form-input" placeholder="e.g. OpenAI API Key" required/>
+            <span class="form-label" data-i18n="secrets.field_name">Name</span>
+            <input type="text" id="secretName" class="form-input" placeholder="e.g. OpenAI API Key" required data-i18n-ph="secrets.field_name_ph"/>
           </label>
           <label class="form-group">
-            <span class="form-label">Category</span>
+            <span class="form-label" data-i18n="secrets.field_category">Category</span>
             <select id="secretCategory" class="form-input">
-              <option value="api">API Key</option>
-              <option value="db">Database</option>
-              <option value="ssh">SSH Key</option>
-              <option value="password">Password</option>
-              <option value="other">Other</option>
+              <option value="api" data-i18n="secrets.cat_api_label">API Key</option>
+              <option value="db" data-i18n="secrets.cat_db_label">Database</option>
+              <option value="ssh" data-i18n="secrets.cat_ssh_label">SSH Key</option>
+              <option value="password" data-i18n="secrets.cat_password_label">Password</option>
+              <option value="other" data-i18n="secrets.cat_other_label">Other</option>
             </select>
           </label>
           <label class="form-group">
-            <span class="form-label">Value</span>
+            <span class="form-label" data-i18n="secrets.field_value">Value</span>
             <div class="value-input-wrap">
-              <input type="password" id="secretValue" class="form-input" placeholder="sk-…" required autocomplete="off"/>
+              <input type="password" id="secretValue" class="form-input" placeholder="sk-…" required autocomplete="off" data-i18n-ph="secrets.field_value_ph"/>
               <button type="button" class="toggle-vis" id="toggleSecretVis">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
-            <button type="button" class="tool-btn secondary" id="secretGenBtn" style="margin-top:0.35rem">Generate a strong password</button>
+            <button type="button" class="tool-btn secondary" id="secretGenBtn" style="margin-top:0.35rem" data-i18n="secrets.generate_strong">Generate a strong password</button>
           </label>
           <label class="form-group">
-            <span class="form-label">Notes <span style="color:var(--text3)">(optional)</span></span>
-            <textarea id="secretNotes" class="form-input form-textarea" placeholder="Endpoint, username, etc."></textarea>
+            <span class="form-label"><span data-i18n="secrets.field_notes">Notes</span> <span style="color:var(--text3)" data-i18n="secrets.field_notes_hint">(optional)</span></span>
+            <textarea id="secretNotes" class="form-input form-textarea" placeholder="Endpoint, username, etc." data-i18n-ph="secrets.field_notes_ph"></textarea>
           </label>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="cancelSecretBtn">Cancel</button>
-            <button type="submit" class="modal-save">Save</button>
+            <button type="button" class="modal-cancel" id="cancelSecretBtn" data-i18n="common.cancel">Cancel</button>
+            <button type="submit" class="modal-save" data-i18n="common.save">Save</button>
           </div>
         </form>
         <!-- Detail view: tapping a secret opens it here, read-first -->
@@ -646,14 +647,14 @@
           </div>
           <div class="secret-detail-value-wrap">
             <code class="secret-detail-value" id="secretDetailValue">••••••••••••</code>
-            <button type="button" class="toggle-vis" id="secretDetailReveal" title="Show value">
+            <button type="button" class="toggle-vis" id="secretDetailReveal" title="Show value" data-i18n-title="secrets.reveal_value">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
           <div class="secret-detail-notes hidden" id="secretDetailNotes"></div>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="secretDetailClose">Close</button>
-            <button type="button" class="modal-save" id="secretDetailCopy">Copy value</button>
+            <button type="button" class="modal-cancel" id="secretDetailClose" data-i18n="common.close">Close</button>
+            <button type="button" class="modal-save" id="secretDetailCopy" data-i18n="secrets.copy_value">Copy value</button>
           </div>
         </div>
       </div>
@@ -664,37 +665,37 @@
   <div class="tab-content hidden" id="tab-journal">
     <div class="page-inner">
       <div class="tab-header">
-        <h2>Journal</h2>
+        <h2 data-i18n="journal.title">Journal</h2>
         <div class="header-actions">
-          <button class="add-btn" id="journalCalBtn" title="Calendar view">
+          <button class="add-btn" id="journalCalBtn" title="Calendar view" data-i18n="journal.calendar_btn" data-i18n-title="journal.calendar_btn_title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Calendar
+            <span data-i18n="journal.calendar_btn">Calendar</span>
           </button>
           <button class="add-btn" id="addEntryBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Add
+            <span data-i18n="common.add">Add</span>
           </button>
         </div>
       </div>
       <div class="journal-stats hidden" id="journalStats"></div>
       <div class="search-bar">
-        <input type="search" id="journalSearch" placeholder="Search entries…" class="search-input"/>
+        <input type="search" id="journalSearch" placeholder="Search entries…" class="search-input" data-i18n-ph="journal.search_ph"/>
       </div>
       <div class="category-pills" id="journalPills">
-        <button class="pill active" data-cat="all">All</button>
-        <button class="pill" data-cat="personal">Personal</button>
-        <button class="pill" data-cat="work">Work</button>
-        <button class="pill" data-cat="evidence">Evidence</button>
-        <button class="pill" data-cat="ideas">Ideas</button>
-        <button class="pill" data-cat="__fav">★ Favorites</button>
+        <button class="pill active" data-cat="all" data-i18n="journal.cat_all">All</button>
+        <button class="pill" data-cat="personal" data-i18n="journal.cat_personal">Personal</button>
+        <button class="pill" data-cat="work" data-i18n="journal.cat_work">Work</button>
+        <button class="pill" data-cat="evidence" data-i18n="journal.cat_evidence">Evidence</button>
+        <button class="pill" data-cat="ideas" data-i18n="journal.cat_ideas">Ideas</button>
+        <button class="pill" data-cat="__fav" data-i18n="journal.cat_favorites">★ Favorites</button>
       </div>
       <div class="calendar hidden" id="journalCalendar">
         <div class="cal-head">
-          <button type="button" class="cal-nav" id="calPrev" aria-label="Previous month">
+          <button type="button" class="cal-nav" id="calPrev" aria-label="Previous month" data-i18n-aria-label="journal.prev_month_aria">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
           <span class="cal-title" id="calTitle"></span>
-          <button type="button" class="cal-nav" id="calNext" aria-label="Next month">
+          <button type="button" class="cal-nav" id="calNext" aria-label="Next month" data-i18n-aria-label="journal.next_month_aria">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
@@ -703,7 +704,7 @@
       </div>
       <div class="day-filter hidden" id="journalDayFilter">
         <span id="journalDayFilterLabel"></span>
-        <button type="button" class="day-filter-clear" id="journalDayFilterClear" aria-label="Clear day filter">
+        <button type="button" class="day-filter-clear" id="journalDayFilterClear" aria-label="Clear day filter" data-i18n-aria-label="journal.clear_day_filter_aria">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -714,17 +715,18 @@
       <div class="modal-backdrop"></div>
       <div class="modal-box">
         <div class="modal-topbar">
-          <span class="modal-title" id="journalModalTitle">New Entry</span>
+          <span class="modal-title" id="journalModalTitle" data-i18n="journal.modal_new">New Entry</span>
           <div class="modal-topbar-actions">
-            <button type="button" class="modal-more-btn hidden" id="journalMoreBtn" title="More options" aria-label="More options">
+            <button type="button" class="modal-more-btn hidden" id="journalMoreBtn" title="More options" aria-label="More options" data-i18n-title="journal.more_title" data-i18n-aria-label="journal.more_title">
               <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
             </button>
             <div class="modal-more-menu" id="journalMoreMenu">
-              <button type="button" class="modal-more-item hidden" id="journalMoreFav">★ Add to favorites</button>
-              <button type="button" class="modal-more-item hidden" id="journalMoreEdit">Edit entry</button>
-              <button type="button" class="modal-more-item hidden" id="journalMoreExport">Export as .txt</button>
+              <button type="button" class="modal-more-item hidden" id="journalMoreFav" data-i18n="journal.more_fav_add">★ Add to favorites</button>
+              <button type="button" class="modal-more-item hidden" id="journalMoreFind" data-i18n="journal.more_find">Find in entry</button>
+              <button type="button" class="modal-more-item hidden" id="journalMoreEdit" data-i18n="journal.more_edit">Edit entry</button>
+              <button type="button" class="modal-more-item hidden" id="journalMoreExport" data-i18n="journal.more_export">Export as .txt</button>
               <div class="modal-more-divider" id="journalMoreEditDiv"></div>
-              <button type="button" class="modal-more-item danger hidden" id="journalDelete">Delete entry</button>
+              <button type="button" class="modal-more-item danger hidden" id="journalDelete" data-i18n="journal.more_delete">Delete entry</button>
             </div>
             <button class="modal-close-btn" id="closeJournalModal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -733,72 +735,85 @@
         </div>
         <form id="journalForm" class="modal-form">
           <label class="form-group">
-            <span class="form-label">Title</span>
-            <input type="text" id="journalTitle" class="form-input" placeholder="Entry title…"/>
+            <span class="form-label" data-i18n="journal.field_title">Title</span>
+            <input type="text" id="journalTitle" class="form-input" placeholder="Entry title…" data-i18n-ph="journal.field_title_ph"/>
           </label>
           <label class="form-group">
-            <span class="form-label">Category</span>
+            <span class="form-label" data-i18n="journal.field_category">Category</span>
             <select id="journalCategory" class="form-input">
-              <option value="personal">Personal</option>
-              <option value="work">Work</option>
-              <option value="evidence">Evidence</option>
-              <option value="ideas">Ideas</option>
+              <option value="personal" data-i18n="journal.cat_personal">Personal</option>
+              <option value="work" data-i18n="journal.cat_work">Work</option>
+              <option value="evidence" data-i18n="journal.cat_evidence">Evidence</option>
+              <option value="ideas" data-i18n="journal.cat_ideas">Ideas</option>
             </select>
           </label>
           <label class="form-group">
-            <span class="form-label">Template <span style="color:var(--text3)">(fills the page — new entries)</span></span>
+            <span class="form-label"><span data-i18n="journal.field_template">Template</span> <span style="color:var(--text3)" data-i18n="journal.field_template_hint">(fills the page — new entries)</span></span>
             <select id="journalTemplate" class="form-input">
-              <option value="">Blank page</option>
-              <option value="daily">Daily reflection</option>
-              <option value="gratitude">Gratitude list</option>
-              <option value="goals">Goals &amp; habits</option>
-              <option value="meeting">Meeting notes</option>
-              <option value="travel">Travel diary</option>
+              <option value="" data-i18n="journal.template_blank">Blank page</option>
+              <option value="daily" data-i18n="journal.template_daily">Daily reflection</option>
+              <option value="gratitude" data-i18n="journal.template_gratitude">Gratitude list</option>
+              <option value="goals" data-i18n="journal.template_goals">Goals &amp; habits</option>
+              <option value="meeting" data-i18n="journal.template_meeting">Meeting notes</option>
+              <option value="travel" data-i18n="journal.template_travel">Travel diary</option>
             </select>
           </label>
           <div class="form-group">
-            <span class="form-label">Mood <span style="color:var(--text3)">(optional)</span></span>
+            <span class="form-label"><span data-i18n="journal.field_mood">Mood</span> <span style="color:var(--text3)" data-i18n="journal.field_mood_hint">(optional)</span></span>
             <div class="mood-row" id="journalMood">
-              <button type="button" class="mood-opt" data-mood="1"><span>😞</span><small>Rough</small></button>
-              <button type="button" class="mood-opt" data-mood="2"><span>😕</span><small>Low</small></button>
-              <button type="button" class="mood-opt" data-mood="3"><span>😐</span><small>Okay</small></button>
-              <button type="button" class="mood-opt" data-mood="4"><span>🙂</span><small>Good</small></button>
-              <button type="button" class="mood-opt" data-mood="5"><span>😄</span><small>Great</small></button>
+              <button type="button" class="mood-opt" data-mood="1"><span>😞</span><small data-i18n="journal.mood_rough">Rough</small></button>
+              <button type="button" class="mood-opt" data-mood="2"><span>😕</span><small data-i18n="journal.mood_low">Low</small></button>
+              <button type="button" class="mood-opt" data-mood="3"><span>😐</span><small data-i18n="journal.mood_okay">Okay</small></button>
+              <button type="button" class="mood-opt" data-mood="4"><span>🙂</span><small data-i18n="journal.mood_good">Good</small></button>
+              <button type="button" class="mood-opt" data-mood="5"><span>😄</span><small data-i18n="journal.mood_great">Great</small></button>
             </div>
           </div>
           <label class="form-group">
-            <span class="form-label">Tags <span style="color:var(--text3)">(comma separated — searchable)</span></span>
-            <input type="text" id="journalTags" class="form-input" placeholder="travel, family, work…" autocomplete="off"/>
+            <span class="form-label"><span data-i18n="journal.field_tags">Tags</span> <span style="color:var(--text3)" data-i18n="journal.field_tags_hint">(comma separated — searchable)</span></span>
+            <input type="text" id="journalTags" class="form-input" placeholder="travel, family, work…" autocomplete="off" data-i18n-ph="journal.field_tags_ph"/>
           </label>
           <div class="prompt-card hidden" id="journalPromptCard">
-            <span class="prompt-label">Writing prompt</span>
+            <span class="prompt-label" data-i18n="journal.prompt_label">Writing prompt</span>
             <p class="prompt-text" id="journalPromptText"></p>
             <div class="prompt-actions">
-              <button type="button" class="tool-btn" id="journalPromptUse">Use it</button>
-              <button type="button" class="tool-btn secondary" id="journalPromptShuffle">Shuffle</button>
-              <button type="button" class="tool-btn secondary" id="journalPromptHide">Dismiss</button>
+              <button type="button" class="tool-btn" id="journalPromptUse" data-i18n="journal.prompt_use">Use it</button>
+              <button type="button" class="tool-btn secondary" id="journalPromptShuffle" data-i18n="journal.prompt_shuffle">Shuffle</button>
+              <button type="button" class="tool-btn secondary" id="journalPromptHide" data-i18n="journal.prompt_dismiss">Dismiss</button>
             </div>
           </div>
           <label class="form-group">
-            <span class="form-label">Content</span>
-            <textarea id="journalBody" class="form-input form-textarea journal-textarea" placeholder="Write anything… it's encrypted."></textarea>
+            <span class="form-label" data-i18n="journal.field_content">Content</span>
+            <textarea id="journalBody" class="form-input form-textarea journal-textarea" placeholder="Write anything… it's encrypted." data-i18n-ph="journal.field_content_ph"></textarea>
           </label>
           <div class="form-group">
-            <span class="form-label">Media <span style="color:var(--text3)">(optional — photos or videos, encrypted with the entry)</span></span>
+            <span class="form-label"><span data-i18n="journal.field_media">Media</span> <span style="color:var(--text3)" data-i18n="journal.field_media_hint">(optional — photos or videos, encrypted with the entry)</span></span>
             <div class="journal-thumbs" id="journalThumbs"></div>
             <button type="button" class="tool-btn secondary" id="journalAttachBtn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              Add media
+              <span data-i18n="journal.add_media">Add media</span>
             </button>
             <input type="file" id="journalPhotoInput" accept="image/*,video/*" multiple hidden/>
           </div>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="cancelJournalBtn">Cancel</button>
-            <button type="submit" class="modal-save">Save</button>
+            <button type="button" class="modal-cancel" id="cancelJournalBtn" data-i18n="common.cancel">Cancel</button>
+            <button type="submit" class="modal-save" data-i18n="common.save">Save</button>
           </div>
         </form>
         <!-- Read view: tapping an entry opens it here, not in the editor -->
         <div class="modal-body-scroll hidden" id="journalReadView">
+          <div class="find-bar hidden" id="journalFindBar">
+            <input type="search" id="journalFindInput" class="find-input" autocomplete="off" autocapitalize="off" data-i18n-ph="journal.find_ph"/>
+            <span class="find-count" id="journalFindCount"></span>
+            <button type="button" class="find-nav" id="journalFindPrev" data-i18n-aria-label="journal.find_prev_aria" aria-label="Previous match">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="18 15 12 9 6 15"/></svg>
+            </button>
+            <button type="button" class="find-nav" id="journalFindNext" data-i18n-aria-label="journal.find_next_aria" aria-label="Next match">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button type="button" class="find-nav" id="journalFindClose" data-i18n-aria-label="journal.find_close_aria" aria-label="Close find">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
           <h2 class="journal-read-title" id="journalReadTitle"></h2>
           <div class="journal-read-meta">
             <span class="journal-item-cat" id="journalReadCat">personal</span>
@@ -810,8 +825,8 @@
           <div class="journal-read-body" id="journalReadBody"></div>
           <div class="journal-photos hidden" id="journalPhotos"></div>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="journalReadClose">Close</button>
-            <button type="button" class="modal-save" id="journalReadEdit">Edit</button>
+            <button type="button" class="modal-cancel" id="journalReadClose" data-i18n="common.close">Close</button>
+            <button type="button" class="modal-save" id="journalReadEdit" data-i18n="common.edit">Edit</button>
           </div>
         </div>
       </div>
@@ -822,16 +837,16 @@
   <div class="tab-content hidden" id="tab-auth">
     <div class="page-inner">
       <div class="tab-header">
-        <h2>Auth</h2>
+        <h2 data-i18n="auth.title">Auth</h2>
         <button class="add-btn" id="addTotpBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add
+          <span data-i18n="common.add">Add</span>
         </button>
       </div>
       <div class="totp-list" id="totpList"></div>
       <div class="empty-state" id="totpEmpty">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        <p>No codes yet.<br/>Add an authenticator secret to begin.</p>
+        <p><span data-i18n="auth.empty_title">No codes yet.</span><br/><span data-i18n="auth.empty_body">Add an authenticator secret to begin.</span></p>
       </div>
     </div>
     <!-- Add TOTP Modal -->
@@ -839,30 +854,30 @@
       <div class="modal-backdrop"></div>
       <div class="modal-box">
         <div class="modal-topbar">
-          <span class="modal-title">Add 2FA Code</span>
+          <span class="modal-title" data-i18n="auth.add_title">Add 2FA Code</span>
           <button class="modal-close-btn" id="closeTotpModal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
         <form id="totpForm" class="modal-form">
           <label class="form-group">
-            <span class="form-label">Account</span>
-            <input type="text" id="totpAccount" class="form-input" placeholder="e.g. GitHub" required/>
+            <span class="form-label" data-i18n="auth.field_account">Account</span>
+            <input type="text" id="totpAccount" class="form-input" placeholder="e.g. GitHub" required data-i18n-ph="auth.field_account_ph"/>
           </label>
           <label class="form-group">
-            <span class="form-label">Secret Key</span>
-            <input type="text" id="totpSecret" class="form-input" placeholder="JBSWY3DPEHPK3PXP…" required autocomplete="off"/>
+            <span class="form-label" data-i18n="auth.field_secret">Secret Key</span>
+            <input type="text" id="totpSecret" class="form-input" placeholder="JBSWY3DPEHPK3PXP…" required autocomplete="off" data-i18n-ph="auth.field_secret_ph"/>
           </label>
           <label class="form-group">
-            <span class="form-label">Digits</span>
+            <span class="form-label" data-i18n="auth.field_digits">Digits</span>
             <select id="totpDigits" class="form-input">
-              <option value="6">6 digits</option>
-              <option value="8">8 digits</option>
+              <option value="6" data-i18n="auth.digits_6">6 digits</option>
+              <option value="8" data-i18n="auth.digits_8">8 digits</option>
             </select>
           </label>
           <div class="modal-actions-row">
-            <button type="button" class="modal-cancel" id="cancelTotpBtn">Cancel</button>
-            <button type="submit" class="modal-save">Save</button>
+            <button type="button" class="modal-cancel" id="cancelTotpBtn" data-i18n="common.cancel">Cancel</button>
+            <button type="submit" class="modal-save" data-i18n="common.save">Save</button>
           </div>
         </form>
       </div>
@@ -873,55 +888,55 @@
   <div class="tab-content hidden" id="tab-privacy">
     <div class="page-inner">
       <div class="tab-header">
-        <h2>Privacy</h2>
+        <h2 data-i18n="privacy.title">Privacy</h2>
       </div>
       <div class="privacy-grid" id="privacyGrid">
         <button class="privacy-card" id="permAuditBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-          <span>Permission Audit</span>
+          <span data-i18n="privacy.perm_audit">Permission Audit</span>
         </button>
         <button class="privacy-card" id="trackerCleanBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-          <span>Tracker Cleaner</span>
+          <span data-i18n="privacy.tracker_cleaner">Tracker Cleaner</span>
         </button>
         <button class="privacy-card" id="fingerprintBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 7h5M17 17h5"/></svg>
-          <span>Browser Fingerprint</span>
+          <span data-i18n="privacy.browser_fingerprint">Browser Fingerprint</span>
         </button>
         <button class="privacy-card" id="urlScanBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span>URL Scanner</span>
+          <span data-i18n="privacy.url_scanner">URL Scanner</span>
         </button>
       </div>
       <!-- Tracker Cleaner Tool -->
       <div class="privacy-tool hidden" id="trackerTool">
         <div class="tool-header">
-          <button class="tool-back" id="trackerToolBack">
+          <button class="tool-back" id="trackerToolBack" aria-label="Back" data-i18n-aria-label="common.back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <h3>Tracker Cleaner</h3>
+          <h3 data-i18n="privacy.tracker_cleaner">Tracker Cleaner</h3>
         </div>
-        <textarea id="trackerInput" class="tool-input" placeholder="Paste a URL with tracking params (utm_, fbclid, etc.)…"></textarea>
+        <textarea id="trackerInput" class="tool-input" placeholder="Paste a URL with tracking params (utm_, fbclid, etc.)…" data-i18n-ph="privacy.tracker_input_ph"></textarea>
         <button class="tool-btn" id="trackerCleanAction">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
-          Clean URL
+          <span data-i18n="privacy.tracker_clean_btn">Clean URL</span>
         </button>
         <div class="tool-result hidden" id="trackerResult">
-          <label class="result-label">Clean URL</label>
+          <label class="result-label" data-i18n="privacy.tracker_result_label">Clean URL</label>
           <div class="result-value" id="trackerOutput"></div>
-          <button class="tool-btn secondary" id="trackerCopy">Copy</button>
+          <button class="tool-btn secondary" id="trackerCopy" data-i18n="common.copy">Copy</button>
         </div>
       </div>
       <!-- URL Scanner Tool -->
       <div class="privacy-tool hidden" id="urlScanTool">
         <div class="tool-header">
-          <button class="tool-back" id="urlScanToolBack">
+          <button class="tool-back" id="urlScanToolBack" aria-label="Back" data-i18n-aria-label="common.back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <h3>URL Scanner</h3>
+          <h3 data-i18n="privacy.url_scanner">URL Scanner</h3>
         </div>
-        <input type="url" id="urlScanInput" class="tool-input" placeholder="Paste a URL to analyze…"/>
-        <button class="tool-btn" id="urlScanAction">Scan URL</button>
+        <input type="url" id="urlScanInput" class="tool-input" placeholder="Paste a URL to analyze…" data-i18n-ph="privacy.url_input_ph"/>
+        <button class="tool-btn" id="urlScanAction" data-i18n="privacy.url_scan_btn">Scan URL</button>
         <div class="tool-result hidden" id="urlScanResult">
           <div id="urlScanOutput"></div>
         </div>
@@ -929,10 +944,10 @@
       <!-- Fingerprint Viewer -->
       <div class="privacy-tool hidden" id="fingerprintTool">
         <div class="tool-header">
-          <button class="tool-back" id="fingerprintToolBack">
+          <button class="tool-back" id="fingerprintToolBack" aria-label="Back" data-i18n-aria-label="common.back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <h3>Your Browser Fingerprint</h3>
+          <h3 data-i18n="privacy.fingerprint_title">Your Browser Fingerprint</h3>
         </div>
         <div id="fingerprintOutput" class="fingerprint-list"></div>
       </div>
@@ -942,158 +957,166 @@
   <!-- Tab: Settings -->
   <div class="tab-content hidden" id="tab-settings">
     <div class="page-inner">
-      <div class="tab-header"><h2>Settings</h2></div>
+      <div class="tab-header"><h2 data-i18n="settings.title">Settings</h2></div>
       <div class="settings-group">
-        <div class="settings-label">Security</div>
+        <div class="settings-label" data-i18n="settings.security">Security</div>
         <button class="settings-item" id="changePinBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          <div class="si-text"><strong>Change PIN</strong><small>Change the code that unlocks your vault</small></div>
+          <div class="si-text"><strong data-i18n="settings.change_pin">Change PIN</strong><small data-i18n="settings.change_pin_sub">Change the code that unlocks your vault</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-item" id="setupDecoyBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          <div class="si-text"><strong>Decoy PIN</strong><small>A second code opens a panic calculator</small></div>
+          <div class="si-text"><strong data-i18n="settings.decoy_pin">Decoy PIN</strong><small data-i18n="settings.decoy_pin_sub">A second code opens a panic calculator</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <div class="si-text"><strong>Auto-lock</strong><small>Seals the vault after 30 seconds idle</small></div>
+          <div class="si-text"><strong data-i18n="settings.auto_lock">Auto-lock</strong><small data-i18n="settings.auto_lock_sub">Seals the vault after 30 seconds idle</small></div>
           <label class="toggle-switch"><input type="checkbox" id="autoLockToggle2" checked/><span class="toggle-track"></span></label>
         </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-          <div class="si-text"><strong>Self-Destruct</strong><small>Erases everything after five failed attempts</small></div>
+          <div class="si-text"><strong data-i18n="settings.self_destruct">Self-Destruct</strong><small data-i18n="settings.self_destruct_sub">Erases everything after five failed attempts</small></div>
           <label class="toggle-switch"><input type="checkbox" id="selfDestructToggle"/><span class="toggle-track"></span></label>
         </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="3" y1="8" x2="6" y2="10"/><line x1="3" y1="16" x2="6" y2="14"/><line x1="21" y1="8" x2="18" y2="10"/><line x1="21" y1="16" x2="18" y2="14"/></svg>
-          <div class="si-text"><strong>Shake to Lock</strong><small>Seals the vault when you shake the device</small></div>
+          <div class="si-text"><strong data-i18n="settings.shake_to_lock">Shake to Lock</strong><small data-i18n="settings.shake_to_lock_sub">Seals the vault when you shake the device</small></div>
           <label class="toggle-switch"><input type="checkbox" id="shakeToggle"/><span class="toggle-track"></span></label>
         </div>
       </div>
       <div class="settings-group">
-        <div class="settings-label">Data</div>
+        <div class="settings-label" data-i18n="settings.data">Data</div>
         <button class="settings-item" id="exportSettingsBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <div class="si-text"><strong>Export Encrypted Backup</strong><small>Your whole vault, sealed with its own passphrase</small></div>
+          <div class="si-text"><strong data-i18n="settings.export">Export Encrypted Backup</strong><small data-i18n="settings.export_sub">Your whole vault, sealed with its own passphrase</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-item" id="importSettingsBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <div class="si-text"><strong>Import Backup</strong><small>Restore from a .bbvault or .blackbox backup</small></div>
+          <div class="si-text"><strong data-i18n="settings.import">Import Backup</strong><small data-i18n="settings.import_sub">Restore from a .bbvault or .blackbox backup</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <input type="file" id="importInput" accept=".blackbox,.bbvault,.json" hidden/>
         <button class="settings-item danger" id="clearVaultBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-          <div class="si-text"><strong>Clear All Data</strong><small>Permanently delete everything</small></div>
+          <div class="si-text"><strong data-i18n="settings.clear_all">Clear All Data</strong><small data-i18n="settings.clear_all_sub">Permanently delete everything</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-item danger" id="resetAppBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-          <div class="si-text"><strong>Factory Reset</strong><small>Erases all data, including the PIN</small></div>
+          <div class="si-text"><strong data-i18n="settings.factory_reset">Factory Reset</strong><small data-i18n="settings.factory_reset_sub">Erases all data, including the PIN</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
       <div class="settings-group">
-        <div class="settings-label">Appearance</div>
+        <div class="settings-label" data-i18n="settings.appearance">Appearance</div>
+        <div class="settings-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <div class="si-text"><strong data-i18n="settings.language">Language</strong><small data-i18n="settings.language_sub">Interface language</small></div>
+          <select id="langSelect" class="form-input" style="width:auto;padding:0.3rem 0.5rem">
+            <option value="en" data-i18n="settings.lang_en">English</option>
+            <option value="zh" data-i18n="settings.lang_zh">中文</option>
+          </select>
+        </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
-          <div class="si-text"><strong>Theme</strong><small>Light, dark, or follow system</small></div>
+          <div class="si-text"><strong data-i18n="settings.theme">Theme</strong><small data-i18n="settings.theme_sub">Light, dark, or follow system</small></div>
           <select id="themeSelect" class="form-input" style="width:auto;padding:0.3rem 0.5rem" onchange="S.theme=this.value;_saveSett();Appearance.apply();">
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-            <option value="auto">System</option>
+            <option value="dark" data-i18n="settings.theme_dark">Dark</option>
+            <option value="light" data-i18n="settings.theme_light">Light</option>
+            <option value="auto" data-i18n="settings.theme_system">System</option>
           </select>
         </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-          <div class="si-text"><strong>Living colours</strong><small>Six liquid light orbs drift and breathe behind your vault</small></div>
+          <div class="si-text"><strong data-i18n="settings.living_colours">Living colours</strong><small data-i18n="settings.living_colours_sub">Six liquid light orbs drift and breathe behind your vault</small></div>
           <label class="toggle-switch"><input type="checkbox" id="aliveToggle"/><span class="toggle-track"></span></label>
         </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <div class="si-text"><strong>Wallpaper</strong><small>Live, slowly drifting backdrops</small></div>
+          <div class="si-text"><strong data-i18n="settings.wallpaper">Wallpaper</strong><small data-i18n="settings.wallpaper_sub">Live, slowly drifting backdrops</small></div>
           <select id="wallpaperSelect" class="form-input" style="width:auto;padding:0.3rem 0.5rem" onchange="S.wallpaper=this.value;_saveSett();Appearance.apply();">
-            <option value="none">None</option>
-            <option value="1">Midnight</option>
-            <option value="2">Sunset</option>
-            <option value="3">Ocean Fire</option>
-            <option value="4">Deep Space</option>
-            <option value="5">Aurora</option>
-            <option value="6">Rose Gold</option>
-            <option value="7">Forest Glow</option>
-            <option value="8">Carbon Night</option>
-            <optgroup label="Live">
-              <option value="9">Violet Drift</option>
-              <option value="10">Nebula Bloom</option>
-              <option value="11">Ember Flow</option>
-              <option value="12">Graphite</option>
+            <option value="none" data-i18n="settings.wallpaper_none">None</option>
+            <option value="1" data-i18n="settings.wall_1">Midnight</option>
+            <option value="2" data-i18n="settings.wall_2">Sunset</option>
+            <option value="3" data-i18n="settings.wall_3">Ocean Fire</option>
+            <option value="4" data-i18n="settings.wall_4">Deep Space</option>
+            <option value="5" data-i18n="settings.wall_5">Aurora</option>
+            <option value="6" data-i18n="settings.wall_6">Rose Gold</option>
+            <option value="7" data-i18n="settings.wall_7">Forest Glow</option>
+            <option value="8" data-i18n="settings.wall_8">Carbon Night</option>
+            <optgroup label="Live" data-i18n-label="settings.wallpaper_live">
+              <option value="9" data-i18n="settings.wall_9">Violet Drift</option>
+              <option value="10" data-i18n="settings.wall_10">Nebula Bloom</option>
+              <option value="11" data-i18n="settings.wall_11">Ember Flow</option>
+              <option value="12" data-i18n="settings.wall_12">Graphite</option>
             </optgroup>
           </select>
         </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/></svg>
-          <div class="si-text"><strong>UI style</strong><small>Solid, glass, or neumorphic surfaces</small></div>
+          <div class="si-text"><strong data-i18n="settings.ui_style">UI style</strong><small data-i18n="settings.ui_style_sub">Solid, glass, or neumorphic surfaces</small></div>
           <select id="uiStyleSelect" class="form-input" style="width:auto;padding:0.3rem 0.5rem" onchange="S.uiStyle=this.value;_saveSett();Appearance.apply();">
-            <option value="solid">Solid</option>
-            <option value="glass">Glass</option>
-            <option value="neumo">Neumorphic</option>
+            <option value="solid" data-i18n="settings.ui_solid">Solid</option>
+            <option value="glass" data-i18n="settings.ui_glass">Glass</option>
+            <option value="neumo" data-i18n="settings.ui_neumo">Neumorphic</option>
           </select>
         </div>
         <div class="settings-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          <div class="si-text"><strong>Transcription model</strong><small>On-device Whisper variant used for voice notes</small></div>
+          <div class="si-text"><strong data-i18n="settings.voice_model">Transcription model</strong><small data-i18n="settings.voice_model_sub">On-device Whisper variant used for voice notes</small></div>
           <select id="voiceModelSelect" class="form-input" style="width:auto;padding:0.3rem 0.5rem" onchange="S.voiceModel=this.value;_saveSett();">
-            <option value="Xenova/whisper-tiny.en">Whisper tiny (English, ~40 MB)</option>
-            <option value="Xenova/whisper-base.en">Whisper base (English, ~75 MB)</option>
-            <option value="Xenova/whisper-tiny">Whisper tiny (multilingual, ~40 MB)</option>
+            <option value="Xenova/whisper-tiny.en" data-i18n="settings.voice_opt_tiny_en">Whisper tiny (English, ~40 MB)</option>
+            <option value="Xenova/whisper-base.en" data-i18n="settings.voice_opt_base_en">Whisper base (English, ~75 MB)</option>
+            <option value="Xenova/whisper-tiny" data-i18n="settings.voice_opt_tiny_multi">Whisper tiny (multilingual, ~40 MB)</option>
           </select>
         </div>
         <button class="settings-item" id="coolTourBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <div class="si-text"><strong>Take the tour</strong><small>Thirty seconds through the essentials</small></div>
+          <div class="si-text"><strong data-i18n="settings.take_tour">Take the tour</strong><small data-i18n="settings.take_tour_sub">Thirty seconds through the essentials</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
       <div class="settings-group">
-        <div class="settings-label">About</div>
+        <div class="settings-label" data-i18n="settings.about">About</div>
         <div class="settings-item info-item">
           <svg viewBox="0 0 48 48" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
             <rect x="10" y="8" width="28" height="32" rx="5"/>
             <rect x="19" y="20" width="10" height="20" rx="2"/>
             <circle cx="24" cy="25" r="2"/>
           </svg>
-          <div class="si-text"><strong id="aboutVersion">BLACKBOX</strong><small>AES-256-GCM · PBKDF2-SHA256 · No servers · No tracking</small></div>
+          <div class="si-text"><strong id="aboutVersion">BLACKBOX</strong><small data-i18n="settings.about_sub">AES-256-GCM · PBKDF2-SHA256 · No servers · No tracking</small></div>
         </div>
         <button class="settings-item" id="faqBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <div class="si-text"><strong>FAQ</strong><small>Frequently asked questions</small></div>
+          <div class="si-text"><strong data-i18n="settings.faq">FAQ</strong><small data-i18n="settings.faq_sub">Frequently asked questions</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-item" id="privacyPolicyBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <div class="si-text"><strong>Privacy Policy</strong><small>How we handle your data</small></div>
+          <div class="si-text"><strong data-i18n="settings.privacy_policy">Privacy Policy</strong><small data-i18n="settings.privacy_policy_sub">How we handle your data</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-item" id="websiteBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-          <div class="si-text"><strong>Website</strong><small>alpha1studio.vercel.app</small></div>
+          <div class="si-text"><strong data-i18n="settings.website">Website</strong><small>alpha1studio.vercel.app</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <div class="settings-item" id="updateStatus">
           <svg viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
-          <div class="si-text"><strong id="updateText">Check for Updates</strong><small id="updateSub">Tap to check</small></div>
+          <div class="si-text"><strong id="updateText" data-i18n="settings.check_updates">Check for Updates</strong><small id="updateSub" data-i18n="settings.check_updates_sub">Tap to check</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <button class="settings-item" id="featureReqBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 2l2.4 4.86 5.36.78-3.88 3.78.92 5.34L12 14.24l-4.8 2.52.92-5.34-3.88-3.78 5.36-.78z"/></svg>
-          <div class="si-text"><strong>Request a Feature</strong><small>Tell us what to build next</small></div>
+          <div class="si-text"><strong data-i18n="settings.feature_request">Request a Feature</strong><small data-i18n="settings.feature_request_sub">Tell us what to build next</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
         <button class="settings-item" id="githubBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-          <div class="si-text"><strong>GitHub</strong><small>View source code</small></div>
+          <div class="si-text"><strong data-i18n="settings.github">GitHub</strong><small data-i18n="settings.github_sub">View source code</small></div>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" class="si-arrow"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -1104,27 +1127,27 @@
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
+      <span data-i18n="nav.home">Home</span>
     </button>
     <button class="nav-btn" data-tab="secrets">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      <span>Secrets</span>
+      <span data-i18n="nav.secrets">Secrets</span>
     </button>
     <button class="nav-btn" data-tab="journal">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      <span>Journal</span>
+      <span data-i18n="nav.journal">Journal</span>
     </button>
     <button class="nav-btn" data-tab="auth">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-      <span>Auth</span>
+      <span data-i18n="nav.auth">Auth</span>
     </button>
     <button class="nav-btn" data-tab="privacy">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span>Privacy</span>
+      <span data-i18n="nav.privacy">Privacy</span>
     </button>
     <button class="nav-btn" data-tab="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      <span>Settings</span>
+      <span data-i18n="nav.settings">Settings</span>
     </button>
   </nav>
 
@@ -1135,24 +1158,24 @@
        Lives inside #mainApp so lock/hide flows affect it like any modal. -->
   <div id="photoViewer" class="photo-viewer hidden">
     <div class="pv-top">
-      <button type="button" class="pv-btn" id="photoViewerClose" title="Close" aria-label="Close photo">
+      <button type="button" class="pv-btn" id="photoViewerClose" title="Close" aria-label="Close photo" data-i18n-title="common.close" data-i18n-aria-label="photo.close_aria">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <span class="pv-title" id="photoViewerTitle"></span>
       <span class="pv-count" id="photoViewerCount"></span>
     </div>
     <div class="pv-stage">
-      <button type="button" class="pv-nav" id="photoViewerPrev" title="Previous" aria-label="Previous photo">
+      <button type="button" class="pv-nav" id="photoViewerPrev" title="Previous" aria-label="Previous photo" data-i18n-title="photo.prev" data-i18n-aria-label="photo.prev_aria">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <img class="pv-img" id="photoViewerImg" alt="Encrypted photo"/>
-      <button type="button" class="pv-nav" id="photoViewerNext" title="Next" aria-label="Next photo">
+      <img class="pv-img" id="photoViewerImg" alt="Encrypted photo" data-i18n-alt="photo.img_alt"/>
+      <button type="button" class="pv-nav" id="photoViewerNext" title="Next" aria-label="Next photo" data-i18n-title="photo.next" data-i18n-aria-label="photo.next_aria">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
     <div class="pv-actions">
-      <button type="button" class="tool-btn secondary" id="photoViewerDownload">Download</button>
-      <button type="button" class="tool-btn secondary pv-danger" id="photoViewerDelete">Delete</button>
+      <button type="button" class="tool-btn secondary" id="photoViewerDownload" data-i18n="photo.download">Download</button>
+      <button type="button" class="tool-btn secondary pv-danger" id="photoViewerDelete" data-i18n="common.delete">Delete</button>
     </div>
   </div>
 </div>

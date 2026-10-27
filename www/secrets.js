@@ -39,12 +39,32 @@ const SecretsModule = (() => {
       });
     });
     document.querySelector('#secretModal .modal-backdrop')?.addEventListener('click', closeForm);
+
+    document.addEventListener('langchange', () => {
+      render();
+      if (_viewSecret) openDetail(_viewSecret);
+      else if (_editingId) {
+        const s = _secrets.find(x => x.id === _editingId);
+        if (s) openForm(s);
+      }
+    });
   }
 
   async function refresh() {
     if (!Vault.isUnlocked()) return;
     _secrets = await Vault.getAllSecrets();
     render();
+  }
+
+  function catLabel(cat) {
+    const map = {
+      api: 'secrets.cat_api_label',
+      db: 'secrets.cat_db_label',
+      ssh: 'secrets.cat_ssh_label',
+      password: 'secrets.cat_password_label',
+      other: 'secrets.cat_other_label',
+    };
+    return map[cat] ? t(map[cat]) : (cat || '');
   }
 
   function render() {
@@ -56,7 +76,7 @@ const SecretsModule = (() => {
     if (q) filtered = filtered.filter(s => s.name.toLowerCase().includes(q) || (s.notes||'').toLowerCase().includes(q));
 
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><p>${q ? 'No secrets match your search.' : 'No secrets yet.<br/>Tap <strong>+ Add</strong> to store one.'}</p></div>`;
+      list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><p>${q ? t('secrets.empty_search') : t('secrets.empty_default')}</p></div>`;
       return;
     }
 
@@ -64,19 +84,19 @@ const SecretsModule = (() => {
       <div class="secret-item" data-id="${s.id}">
         <div class="secret-item-header">
           <span class="secret-item-name">${Vault.esc(s.name)}</span>
-          <span class="secret-item-cat">${s.category}</span>
+          <span class="secret-item-cat">${catLabel(s.category)}</span>
         </div>
-        <div class="secret-item-preview">Tap to view</div>
+        <div class="secret-item-preview">${t('secrets.tap_to_view')}</div>
         <div class="secret-item-meta">
           <span class="secret-item-date">${Vault.relTime(s.ts)}</span>
           <div class="secret-item-actions">
-            <button class="secret-action-btn copy-btn" data-id="${s.id}" title="Copy value">
+            <button class="secret-action-btn copy-btn" data-id="${s.id}" title="${t('secrets.copy_value')}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
             </button>
-            <button class="secret-action-btn edit-btn" data-id="${s.id}" title="Edit">
+            <button class="secret-action-btn edit-btn" data-id="${s.id}" title="${t('common.edit')}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
-            <button class="secret-action-btn delete delete-btn" data-id="${s.id}" title="Delete">
+            <button class="secret-action-btn delete delete-btn" data-id="${s.id}" title="${t('common.delete')}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
             </button>
           </div>
@@ -114,7 +134,7 @@ const SecretsModule = (() => {
       btn.addEventListener('click', async e => {
         e.stopPropagation();
         const s = _secrets.find(x => x.id === btn.dataset.id);
-        if (s && await uiConfirm('Delete Secret', `Delete "${s.name}" permanently?`, { danger: true, okLabel: 'Delete' })) {
+        if (s && await uiConfirm(t('secrets.delete_title'), t('secrets.delete_confirm', s.name), { danger: true, okLabel: t('common.delete') })) {
           await Vault.deleteSecret(btn.dataset.id);
           await refresh();
         }
@@ -148,9 +168,9 @@ const SecretsModule = (() => {
     _viewingId = s.id;
     _editingId = null;
     _viewSecret = s;
-    document.getElementById('secretModalTitle').textContent = 'Secret';
+    document.getElementById('secretModalTitle').textContent = t('secrets.modal_view');
     document.getElementById('secretDetailName').textContent = s.name;
-    document.getElementById('secretDetailCat').textContent = s.category;
+    document.getElementById('secretDetailCat').textContent = catLabel(s.category);
     document.getElementById('secretDetailDate').textContent = Vault.relTime(s.ts);
     _maskDetail();
     const notes = document.getElementById('secretDetailNotes');
@@ -188,7 +208,7 @@ const SecretsModule = (() => {
     if (!s) return;
     // Close this panel first — the confirm dialog sits below it in the stack.
     closeForm();
-    if (await uiConfirm('Delete Secret', `Delete "${s.name}" permanently?`, { danger: true, okLabel: 'Delete' })) {
+    if (await uiConfirm(t('secrets.delete_title'), t('secrets.delete_confirm', s.name), { danger: true, okLabel: t('common.delete') })) {
       await Vault.deleteSecret(s.id);
       await refresh();
     }
@@ -198,7 +218,7 @@ const SecretsModule = (() => {
     _editingId = s ? s.id : null;
     _viewingId = null;
     _viewSecret = null;
-    document.getElementById('secretModalTitle').textContent = s ? 'Edit Secret' : 'New Secret';
+    document.getElementById('secretModalTitle').textContent = s ? t('secrets.modal_edit') : t('secrets.modal_new');
     document.getElementById('secretName').value = s ? s.name : '';
     document.getElementById('secretCategory').value = s ? s.category : 'api';
     document.getElementById('secretValue').value = s ? s.value : '';
@@ -248,5 +268,5 @@ const SecretsModule = (() => {
     setTimeout(() => t.remove(), 2000);
   }
 
-  return { init, refresh };
+  return { init, refresh, catLabel };
 })();

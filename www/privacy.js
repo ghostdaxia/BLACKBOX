@@ -12,10 +12,15 @@ const PrivacyModule = (() => {
     document.getElementById('trackerCleanAction')?.addEventListener('click', cleanUrl);
     document.getElementById('trackerCopy')?.addEventListener('click', () => {
       const output = document.getElementById('trackerOutput');
-      if (output) { navigator.clipboard.writeText(output.textContent); toast('Copied'); }
+      if (output) { navigator.clipboard.writeText(output.textContent); toast(t('common.copied')); }
     });
 
     document.getElementById('urlScanAction')?.addEventListener('click', scanUrl);
+
+    document.addEventListener('langchange', () => {
+      if (!document.getElementById('fingerprintTool')?.classList.contains('hidden')) showFingerprint();
+      else if (!document.getElementById('urlScanTool')?.classList.contains('hidden')) scanUrl();
+    });
   }
 
   function showTool(id) {
@@ -31,19 +36,28 @@ const PrivacyModule = (() => {
   }
 
   /* Permission Audit */
+  function stateLabel(state) {
+    return t({
+      granted: 'privacy.state_granted',
+      denied: 'privacy.state_denied',
+      prompt: 'privacy.state_prompt',
+      unknown: 'privacy.state_unknown',
+      unsupported: 'privacy.state_unsupported',
+    }[state] || 'privacy.state_unknown');
+  }
   async function runPermAudit() {
     const perms = [
-      {name:'Camera', api:'camera', check:() => queryPermission('camera')},
-      {name:'Microphone', api:'microphone', check:() => queryPermission('microphone')},
-      {name:'Geolocation', api:'geolocation', check:() => queryPermission('geolocation')},
-      {name:'Notifications', api:'notifications', check:() => Notification.permission},
-      {name:'Clipboard', api:'clipboard-read', check:() => queryPermission('clipboard-read')},
+      {name:'privacy.perm_camera', api:'camera', check:() => queryPermission('camera')},
+      {name:'privacy.perm_microphone', api:'microphone', check:() => queryPermission('microphone')},
+      {name:'privacy.perm_geolocation', api:'geolocation', check:() => queryPermission('geolocation')},
+      {name:'privacy.perm_notifications', api:'notifications', check:() => Notification.permission},
+      {name:'privacy.perm_clipboard', api:'clipboard-read', check:() => queryPermission('clipboard-read')},
     ];
     const results = await Promise.all(perms.map(async p => {
-      try { const state = await p.check(); return {name: p.name, state}; } catch { return {name: p.name, state:'unsupported'}; }
+      try { const state = await p.check(); return {name: t(p.name), state: stateLabel(state)}; } catch { return {name: t(p.name), state: stateLabel('unsupported')}; }
     }));
     const lines = results.map(r => `${r.name}: ${r.state}`).join('\n');
-    await uiAlert('Permission Audit', 'Permissions as visible to the BLACKBOX sandbox:\n\n' + lines);
+    await uiAlert(t('privacy.audit_title'), t('privacy.audit_intro') + '\n\n' + lines);
   }
 
   async function queryPermission(name) {
@@ -68,9 +82,9 @@ const PrivacyModule = (() => {
       const output = document.getElementById('trackerOutput');
       if (output) output.textContent = url.toString();
       if (result) result.classList.remove('hidden');
-      toast(removed > 0 ? `Removed ${removed} tracker params` : 'No trackers found');
+      toast(removed > 0 ? t('privacy.removed_n_trackers', removed) : t('privacy.no_trackers'));
     } catch {
-      toast('Invalid URL', 'red');
+      toast(t('privacy.invalid_url'), 'red');
     }
   }
 
@@ -85,18 +99,18 @@ const PrivacyModule = (() => {
       const url = new URL(input);
       const params = new URLSearchParams(url.search);
       const analysis = [
-        {label:'Protocol', value: url.protocol === 'https:' ? 'Secure (HTTPS)' : 'Not secure (HTTP)'},
-        {label:'Domain', value: url.hostname},
-        {label:'Path', value: url.pathname || '/'},
-        {label:'Query params', value: params.size > 0 ? `${params.size} parameter(s)` : 'None'},
-        {label:'Trackers found', value: [...params.keys()].filter(k => ['utm_','fbclid','gclid','twclid'].some(t => k.includes(t))).length.toString()},
+        {label: t('privacy.protocol'), value: url.protocol === 'https:' ? t('privacy.secure_https') : t('privacy.not_secure_http')},
+        {label: t('privacy.domain'), value: url.hostname},
+        {label: t('privacy.path'), value: url.pathname || '/'},
+        {label: t('privacy.query_params'), value: params.size > 0 ? t('privacy.n_params', params.size) : t('privacy.none')},
+        {label: t('privacy.trackers_found'), value: [...params.keys()].filter(k => ['utm_','fbclid','gclid','twclid'].some(x => k.includes(x))).length.toString()},
       ];
       output.innerHTML = analysis.map(a => `
         <div class="fp-item"><span class="fp-label">${a.label}</span><span class="fp-value">${a.value}</span></div>
       `).join('');
       result.classList.remove('hidden');
     } catch {
-      toast('Invalid URL', 'red');
+      toast(t('privacy.invalid_url'), 'red');
     }
   }
 
@@ -105,17 +119,17 @@ const PrivacyModule = (() => {
     const output = document.getElementById('fingerprintOutput');
     if (!output) return;
     const items = [
-      {label:'User Agent', value:navigator.userAgent.slice(0,80)+'…'},
-      {label:'Language', value:navigator.language},
-      {label:'Platform', value:navigator.platform},
-      {label:'Screen', value:`${screen.width}x${screen.height}`},
-      {label:'Color Depth', value:`${screen.colorDepth}-bit`},
-      {label:'Cookies', value:navigator.cookieEnabled?'Enabled':'Disabled'},
-      {label:'Do Not Track', value:navigator.doNotTrack||'Not set'},
-      {label:'Touch', value:navigator.maxTouchPoints>0?`${navigator.maxTouchPoints} points`:'No'},
-      {label:'Online', value:navigator.onLine?'Yes':'No'},
-      {label:'Cores', value:navigator.hardwareConcurrency||'Unknown'},
-      {label:'Memory', value:navigator.deviceMemory?`${navigator.deviceMemory} GB`:'Unknown'},
+      {label: t('privacy.user_agent'), value: navigator.userAgent.slice(0,80)+'…'},
+      {label: t('privacy.language'), value: navigator.language},
+      {label: t('privacy.platform'), value: navigator.platform},
+      {label: t('privacy.screen'), value: `${screen.width}x${screen.height}`},
+      {label: t('privacy.color_depth'), value: `${screen.colorDepth}-bit`},
+      {label: t('privacy.cookies'), value: navigator.cookieEnabled ? t('privacy.enabled') : t('privacy.disabled')},
+      {label: t('privacy.do_not_track'), value: navigator.doNotTrack || t('privacy.not_set')},
+      {label: t('privacy.touch'), value: navigator.maxTouchPoints > 0 ? t('privacy.n_touch_points', navigator.maxTouchPoints) : t('privacy.touch_no')},
+      {label: t('privacy.online'), value: navigator.onLine ? t('privacy.yes') : t('privacy.no')},
+      {label: t('privacy.cores'), value: navigator.hardwareConcurrency || t('privacy.unknown')},
+      {label: t('privacy.memory'), value: navigator.deviceMemory ? t('privacy.n_gb', navigator.deviceMemory) : t('privacy.unknown')},
     ];
     output.innerHTML = items.map(i => `
       <div class="fp-item"><span class="fp-label">${i.label}</span><span class="fp-value">${i.value}</span></div>

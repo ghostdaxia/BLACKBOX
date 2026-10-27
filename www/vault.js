@@ -191,12 +191,22 @@ const Vault = (() => {
   async function _seedDecoyIfEmpty() {
     if (Object.keys(_raw(_sk('secrets'))).length) return;
     const day = 86400000, ago = n => Date.now() - n * day;
-    await saveSecret({name:'GitHub', value:'ghp_9fLx2PqR7sTn3YwKvB1mZdC8aEjU', category:'api', notes:'personal account — rotate quarterly'});
-    await saveSecret({name:'Google', value:'gqxz-4471-abcd-9920-plmw', category:'password', notes:'recovery email: sam.g@gmail.com'});
-    await saveEntry({title:'Gym plan', body:'Mon/Wed/Fri strength, weekend long run. Cut coffee after 2pm.', category:'personal'});
-    await saveEntry({title:'Gift ideas', body:'Dad: leather gloves. Mum: new Kindle. Sam: vinyl + gift card.', category:'ideas'});
-    await saveTotp({account:'Email', secret:'KRSXG5CTMVRXEZLU', digits:6});
-    await saveClip('wifi HomeNet-F2G7 — sunset-taco-42');
+    const zh = (typeof I18n !== 'undefined' && I18n.getLang && I18n.getLang() === 'zh');
+    if (zh) {
+      await saveSecret({name:'GitHub', value:'ghp_9fLx2PqR7sTn3YwKvB1mZdC8aEjU', category:'api', notes:'个人账户 — 每季度更换'});
+      await saveSecret({name:'Google', value:'gqxz-4471-abcd-9920-plmw', category:'password', notes:'找回邮箱：sam.g@gmail.com'});
+      await saveEntry({title:'健身计划', body:'周一/周三/周五力量训练，周末长跑。下午两点后不喝咖啡。', category:'personal'});
+      await saveEntry({title:'礼物灵感', body:'爸爸：皮手套。妈妈：新款 Kindle。Sam：黑胶唱片 + 礼品卡。', category:'ideas'});
+      await saveTotp({account:'邮箱', secret:'KRSXG5CTMVRXEZLU', digits:6});
+      await saveClip('wifi HomeNet-F2G7 — sunset-taco-42');
+    } else {
+      await saveSecret({name:'GitHub', value:'ghp_9fLx2PqR7sTn3YwKvB1mZdC8aEjU', category:'api', notes:'personal account — rotate quarterly'});
+      await saveSecret({name:'Google', value:'gqxz-4471-abcd-9920-plmw', category:'password', notes:'recovery email: sam.g@gmail.com'});
+      await saveEntry({title:'Gym plan', body:'Mon/Wed/Fri strength, weekend long run. Cut coffee after 2pm.', category:'personal'});
+      await saveEntry({title:'Gift ideas', body:'Dad: leather gloves. Mum: new Kindle. Sam: vinyl + gift card.', category:'ideas'});
+      await saveTotp({account:'Email', secret:'KRSXG5CTMVRXEZLU', digits:6});
+      await saveClip('wifi HomeNet-F2G7 — sunset-taco-42');
+    }
     // Backdate so it looks like a vault that has been in use for months
     for (const name of ['secrets','journal','auth']) {
       const raw = _raw(_sk(name)); let i = 2;
@@ -264,9 +274,9 @@ const Vault = (() => {
     const bytes = Uint8Array.from(atob(b64), c=>c.charCodeAt(0));
     const blob = new Blob([bytes], {type: e.type||'application/octet-stream'});
     const res = await _saveToDevice(name, blob);
-    if (res.uri) _notify(`Saved to Documents/BLACKBOX/${name}`);
-    else if (!res.web) _notify('File could not be saved', 'red');
-    else _notify('File downloaded');
+    if (res.uri) _notify(t('vault.file_saved_docs', name));
+    else if (!res.web) _notify(t('vault.file_save_failed'), 'red');
+    else _notify(t('vault.file_downloaded'));
   }
   async function deleteFile(id) { const f = _raw(_sk('files')); delete f[id]; _save(_sk('files'), f); }
   /** Attach an encrypted transcript to a stored file (voice notes). */
@@ -375,7 +385,7 @@ const Vault = (() => {
   async function createPackage(opts) {
     const { file, message, pin } = opts;
     if (!file) throw new Error('no file');
-    if (!pin || pin.length < 4) throw new Error('PIN must be at least 4 characters');
+    if (!pin || pin.length < 4) throw new Error(t('vault.err_pin_short'));
     const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(file); });
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -390,14 +400,14 @@ const Vault = (() => {
   async function openPackage(file, pin) {
     const text = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsText(file); });
     let pkg;
-    try { pkg = JSON.parse(text); } catch { throw new Error('Not a BLACKBOX package'); }
-    if (pkg.bbshare !== 1 || !pkg.salt || !pkg.iv || !pkg.ct) throw new Error('Not a BLACKBOX package');
+    try { pkg = JSON.parse(text); } catch { throw new Error(t('vault.err_not_package')); }
+    if (pkg.bbshare !== 1 || !pkg.salt || !pkg.iv || !pkg.ct) throw new Error(t('vault.err_not_package'));
     const key = await _derivePkgKey(pin, _b64ToBytes(pkg.salt));
     let pt;
     try {
       pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: _b64ToBytes(pkg.iv) }, key, _b64ToBytes(pkg.ct));
     } catch {
-      throw new Error('Wrong PIN — the package stays encrypted');
+      throw new Error(t('vault.err_wrong_package_pin'));
     }
     const payload = JSON.parse(new TextDecoder().decode(pt));
     return { message: payload.msg || '', name: payload.name || 'file', type: payload.type || 'application/octet-stream', bytes: _b64ToBytes(payload.data) };
@@ -473,8 +483,8 @@ const Vault = (() => {
      PIN), so it is safe in transit AND restorable on any device — the
      vault salt travels inside the encrypted envelope. */
   async function exportEncryptedBackup(passphrase) {
-    if (_profile === 'decoy') throw new Error('Backups are only available in your main vault');
-    if (!passphrase || passphrase.length < 8) throw new Error('Passphrase must be at least 8 characters');
+    if (_profile === 'decoy') throw new Error(t('vault.err_backup_main_only'));
+    if (!passphrase || passphrase.length < 8) throw new Error(t('vault.err_passphrase_short'));
     const stores = {};
     for (const [name, key] of Object.entries(STORES)) {
       const raw = _raw(_sk(name));
@@ -494,23 +504,23 @@ const Vault = (() => {
     const name = `blackbox-vault-${Date.now()}.bbvault`;
     const blob = new Blob([JSON.stringify(pkg)], { type: 'application/json' });
     const res = await _saveToDevice(name, blob);
-    if (res.uri) _notify(`Encrypted backup saved to Documents/BLACKBOX/${name}`);
-    else if (!res.web) _notify('Backup could not be saved', 'red');
-    else _notify('Encrypted backup downloaded');
+    if (res.uri) _notify(t('vault.enc_backup_saved_docs', name));
+    else if (!res.web) _notify(t('vault.backup_save_failed'), 'red');
+    else _notify(t('vault.enc_backup_downloaded'));
     return res;
   }
 
   async function importEncryptedBackup(file, passphrase) {
     const text = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsText(file); });
     let pkg;
-    try { pkg = JSON.parse(text); } catch { throw new Error('Not a BLACKBOX backup'); }
-    if (pkg.bbvault !== 1 || !pkg.salt || !pkg.iv || !pkg.ct) throw new Error('Not a BLACKBOX backup');
+    try { pkg = JSON.parse(text); } catch { throw new Error(t('vault.err_not_backup')); }
+    if (pkg.bbvault !== 1 || !pkg.salt || !pkg.iv || !pkg.ct) throw new Error(t('vault.err_not_backup'));
     const key = await _derivePkgKey(passphrase, _b64ToBytes(pkg.salt));
     let pt;
     try {
       pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: _b64ToBytes(pkg.iv) }, key, _b64ToBytes(pkg.ct));
     } catch {
-      throw new Error('Wrong passphrase');
+      throw new Error(t('vault.err_wrong_passphrase'));
     }
     const data = JSON.parse(new TextDecoder().decode(pt));
     if (pkg.vaultSalt) localStorage.setItem(SK, pkg.vaultSalt); // restore on any device
@@ -521,18 +531,18 @@ const Vault = (() => {
   }
 
   async function exportBackup() {
-    if (_profile === 'decoy') throw new Error('Backups are only available in your main vault');
+    if (_profile === 'decoy') throw new Error(t('vault.err_backup_main_only'));
     const data = {v:3, ts: Date.now()};
     for (const [name, key] of Object.entries(STORES)) { data[name] = _raw(_sk(name)); }
     const name = `blackbox-backup-${Date.now()}.blackbox`;
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
     const res = await _saveToDevice(name, blob);
     if (res.uri) {
-      _notify(`Backup saved to Documents/BLACKBOX/${name}`);
+      _notify(t('vault.backup_saved_docs', name));
     } else if (!res.web) {
-      _notify('Backup could not be saved', 'red');
+      _notify(t('vault.backup_save_failed'), 'red');
     } else {
-      _notify('Backup downloaded');
+      _notify(t('vault.backup_downloaded'));
     }
     return res;
   }
@@ -560,7 +570,17 @@ const Vault = (() => {
     try { sessionStorage.removeItem('bb_mkey'); sessionStorage.removeItem('bb_mprofile'); } catch {}
   }
   function formatSize(b) { return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'; }
-  function relTime(ts) { const d=Date.now()-ts; return d<60000?'just now':d<3600000?Math.floor(d/60000)+'m ago':d<86400000?Math.floor(d/3600000)+'h ago':Math.floor(d/86400000)+'d ago'; }
+  function relTime(ts) {
+    const d = Date.now() - ts;
+    const zh = (typeof I18n !== 'undefined' && I18n.getLang && I18n.getLang() === 'zh');
+    if (zh) {
+      if (d < 60000) return t('time.just_now');
+      if (d < 3600000) return t('time.min_ago', Math.floor(d/60000));
+      if (d < 86400000) return t('time.hour_ago', Math.floor(d/3600000));
+      return t('time.day_ago', Math.floor(d/86400000));
+    }
+    return d<60000?'just now':d<3600000?Math.floor(d/60000)+'m ago':d<86400000?Math.floor(d/3600000)+'h ago':Math.floor(d/86400000)+'d ago';
+  }
   function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
   return {

@@ -28,9 +28,9 @@ const FilesManager = (() => {
       try {
         await Vault.saveFile(f);
         await refresh();
-        toast(`Encrypted ${f.name}`);
+        toast(t('files.encrypted_toast', f.name));
       } catch {
-        toast('Import failed — the file may be too large', 'red');
+        toast(t('files.import_failed'), 'red');
       }
       e.target.value = '';
     });
@@ -43,6 +43,10 @@ const FilesManager = (() => {
     document.getElementById('photoViewerDelete')?.addEventListener('click', _viewerDelete);
     _initSend();
     _initOpen();
+    document.addEventListener('langchange', () => {
+      if (!document.getElementById('filesSection')?.classList.contains('hidden')) _renderFiles();
+      if (!document.getElementById('photoViewer')?.classList.contains('hidden')) _viewerShow();
+    });
   }
 
   /* ── Encrypted file list ── */
@@ -56,7 +60,7 @@ const FilesManager = (() => {
     const list = document.getElementById('filesList');
     if (!list) return;
     if (_files.length === 0) {
-      list.innerHTML = `<div class="empty-state"><p>No files yet.<br/>Tap <strong>Import</strong> to encrypt one.</p></div>`;
+      list.innerHTML = `<div class="empty-state"><p>${t('files.empty_list')}</p></div>`;
       if (_view === 'gallery') _renderGrid();
       return;
     }
@@ -67,10 +71,10 @@ const FilesManager = (() => {
           <span class="file-meta">${Vault.formatSize(f.size)} · ${Vault.relTime(f.ts)}</span>
         </div>
         <div class="secret-item-actions">
-          <button class="secret-action-btn dl-btn" data-id="${f.id}" title="Download">
+          <button class="secret-action-btn dl-btn" data-id="${f.id}" title="${t('files.download')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
-          <button class="secret-action-btn delete del-file" data-id="${f.id}" title="Delete">
+          <button class="secret-action-btn delete del-file" data-id="${f.id}" title="${t('common.delete')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
           </button>
         </div>
@@ -87,20 +91,20 @@ const FilesManager = (() => {
           openViewer(imgs.map(x => x.id), imgs.findIndex(x => x.id === f.id));
           return;
         }
-        try { await Vault.downloadFile(el.dataset.id); } catch { toast('Download failed', 'red'); }
+        try { await Vault.downloadFile(el.dataset.id); } catch { toast(t('files.download_failed'), 'red'); }
       });
     });
     list.querySelectorAll('.dl-btn').forEach(btn => {
       btn.addEventListener('click', async e => {
         e.stopPropagation();
-        try { await Vault.downloadFile(btn.dataset.id); } catch { toast('Download failed', 'red'); }
+        try { await Vault.downloadFile(btn.dataset.id); } catch { toast(t('files.download_failed'), 'red'); }
       });
     });
     list.querySelectorAll('.del-file').forEach(btn => {
       btn.addEventListener('click', async e => {
         e.stopPropagation();
         const f = _files.find(x => x.id === btn.dataset.id);
-        if (f && await uiConfirm('Delete File', `Delete "${f.name}" from the vault permanently?`, { danger: true, okLabel: 'Delete' })) {
+        if (f && await uiConfirm(t('files.delete_title'), t('files.delete_confirm', f.name), { danger: true, okLabel: t('common.delete') })) {
           await Vault.deleteFile(btn.dataset.id);
           await refresh();
         }
@@ -132,7 +136,7 @@ const FilesManager = (() => {
     _revokeGridUrls();
     const imgs = _files.filter(_isImage);
     if (imgs.length === 0) {
-      grid.innerHTML = `<div class="empty-state"><p>No photos yet.<br/>Import an image to fill your gallery.</p></div>`;
+      grid.innerHTML = `<div class="empty-state"><p>${t('files.empty_gallery')}</p></div>`;
       return;
     }
     grid.innerHTML = imgs.map(f => `
@@ -163,7 +167,7 @@ const FilesManager = (() => {
       _viewerMeta = new Map(all.map(f => [f.id, f]));
       _viewerIds = (ids || []).filter(id => _viewerMeta.has(id));
     } catch { _viewerIds = []; }
-    if (!_viewerIds.length) { toast('Photo no longer exists', 'red'); return; }
+    if (!_viewerIds.length) { toast(t('files.photo_gone'), 'red'); return; }
     // Align on the requested photo itself: the filtered list may have
     // dropped ids that were deleted since the caller built its array.
     const target = (ids || [])[index || 0];
@@ -180,7 +184,7 @@ const FilesManager = (() => {
     const img = document.getElementById('photoViewerImg');
     if (!img) return;
     if (_viewerUrl) { URL.revokeObjectURL(_viewerUrl); _viewerUrl = null; }
-    document.getElementById('photoViewerTitle').textContent = _viewerMeta.get(id)?.name || 'Photo';
+    document.getElementById('photoViewerTitle').textContent = _viewerMeta.get(id)?.name || t('files.photo');
     document.getElementById('photoViewerCount').textContent = `${_viewerIdx + 1} / ${_viewerIds.length}`;
     img.style.opacity = '0.25';
     try {
@@ -195,7 +199,7 @@ const FilesManager = (() => {
     } catch {
       if (seq !== _viewerSeq) return;
       img.style.opacity = '0.25';
-      toast('Could not decrypt this photo', 'red');
+      toast(t('files.cannot_decrypt_photo'), 'red');
     }
   }
 
@@ -208,15 +212,15 @@ const FilesManager = (() => {
   async function _viewerDownload() {
     const id = _viewerIds[_viewerIdx];
     if (!id) return;
-    try { await Vault.downloadFile(id); } catch { toast('Download failed', 'red'); }
+    try { await Vault.downloadFile(id); } catch { toast(t('files.download_failed'), 'red'); }
   }
 
   async function _viewerDelete() {
     const id = _viewerIds[_viewerIdx];
     if (!id) return;
     const meta = _viewerMeta.get(id);
-    if (!await uiConfirm('Delete Photo', `Delete "${meta?.name || 'this photo'}" from the vault permanently?`, { danger: true, okLabel: 'Delete' })) return;
-    try { await Vault.deleteFile(id); } catch { toast('Delete failed', 'red'); return; }
+    if (!await uiConfirm(t('files.delete_photo_title'), t('files.delete_photo_confirm', meta?.name || t('files.this_photo')), { danger: true, okLabel: t('common.delete') })) return;
+    try { await Vault.deleteFile(id); } catch { toast(t('files.delete_failed'), 'red'); return; }
     _viewerIds.splice(_viewerIdx, 1);
     if (!_viewerIds.length) closeViewer();
     else { _viewerIdx = Math.min(_viewerIdx, _viewerIds.length - 1); _viewerShow(); }
@@ -255,15 +259,15 @@ const FilesManager = (() => {
       e.preventDefault();
       const pin = document.getElementById('pkgPin').value;
       const message = document.getElementById('pkgMessage').value.trim();
-      if (!_pkgFile) { await uiAlert('Send Package', 'Choose a file to encrypt first.'); return; }
-      if (!pin || pin.length < 4) { await uiAlert('Send Package', 'The shared PIN must be at least 4 characters.'); return; }
+      if (!_pkgFile) { await uiAlert(t('files.send_title'), t('files.send_no_file')); return; }
+      if (!pin || pin.length < 4) { await uiAlert(t('files.send_title'), t('files.send_pin_short')); return; }
       try {
         const pkg = await Vault.createPackage({ file: _pkgFile, message, pin });
         const res = await Vault.saveUnwrapped(pkg.filename, pkg.blob);
         _closeSend();
-        await uiAlert('Package Created', `${pkg.filename} was saved${res.uri ? ' to Documents/BLACKBOX/' : ' to your downloads'}.\n\nSend it to anyone — WhatsApp, email, Bluetooth. Only someone with the shared PIN can open it in BLACKBOX.`);
+        await uiAlert(t('files.send_created_title'), t('files.send_created_body', pkg.filename, !!res.uri));
       } catch (err) {
-        await uiAlert('Send Failed', err.message || 'Could not create the package.');
+        await uiAlert(t('files.send_failed_title'), err.message || t('files.send_failed_body'));
       }
     });
   }
@@ -294,23 +298,23 @@ const FilesManager = (() => {
     });
     document.getElementById('unlockPkgBtn')?.addEventListener('click', async () => {
       const pin = document.getElementById('openPkgPin').value;
-      if (!_openFile) { await uiAlert('Open Package', 'Choose a .bbshare file first.'); return; }
-      if (!pin) { await uiAlert('Open Package', 'Enter the shared PIN.'); return; }
+      if (!_openFile) { await uiAlert(t('files.open_title'), t('files.open_choose_file')); return; }
+      if (!pin) { await uiAlert(t('files.open_title'), t('files.open_enter_pin')); return; }
       try {
         _opened = await Vault.openPackage(_openFile, pin);
-        document.getElementById('pkgMsgOut').textContent = _opened.message || '(no message)';
+        document.getElementById('pkgMsgOut').textContent = _opened.message || t('files.open_no_message');
         document.getElementById('pkgFileOut').textContent = `${_opened.name} (${Vault.formatSize(_opened.bytes.length)})`;
         document.getElementById('pkgOpenResult').classList.remove('hidden');
       } catch (err) {
         document.getElementById('pkgOpenResult').classList.add('hidden');
-        await uiAlert('Open Failed', err.message || 'Could not decrypt this package.');
+        await uiAlert(t('files.open_failed_title'), err.message || t('files.open_failed_body'));
       }
     });
     document.getElementById('savePkgFileBtn')?.addEventListener('click', async () => {
       if (!_opened) return;
       const blob = new Blob([_opened.bytes], { type: _opened.type });
       const res = await Vault.saveUnwrapped(_opened.name, blob);
-      toast(res.uri ? 'Saved to Documents/BLACKBOX/' : 'Saved to downloads');
+      toast(res.uri ? t('files.saved_docs') : t('files.saved_downloads'));
     });
   }
   function _closeOpen() {
